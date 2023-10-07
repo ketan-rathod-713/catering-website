@@ -1,0 +1,79 @@
+{
+    "products": [
+        {
+            "id": 1,
+            "title": "Kajukatli 1 Kg Box",
+            "category": "mithai-box",
+            "image":"https://picsum.photos/400", 
+            "price": 1000,
+            "images": [
+                "https://picsum.photos/400",
+                "https://picsum.photos/400"
+            ]
+        },
+        {
+            "id": 2,
+            "title": "Kajukatli 2 Kg Box",
+            "category": "mithai-box",
+            "image":"https://picsum.photos/400", 
+            "price": 500
+        },
+        {
+            "id": 3,
+            "title": "Kajukatli 4 Kg Box",
+            "category": "mithai-box",
+            "image":"https://picsum.photos/400", 
+            "price": 400
+        },
+        {
+            "id": 3,
+            "title": "Kajukatli 4 Kg Box",
+            "category": "mithai-box",
+            "image":"https://picsum.photos/400", 
+            "price": 400
+        },
+        {
+            "id": 4,
+            "title": "Kajukatli 4 Kg Box",
+            "category": "mithai-box",
+            "image":"https://picsum.photos/400", 
+            "price": 400
+        },
+        {
+            "id": 5,
+            "title": "Kajukatli 4 Kg Box",
+            "category": "mithai-box",
+            "image":"https://picsum.photos/400", 
+            "price": 400
+        },
+        {
+            "id": 6,
+            "title": "Kajukatli 4 Kg Box",
+            "category": "mithai-box",
+            "image":"https://picsum.photos/400", 
+            "price": 400
+        }
+    ],
+    "cart": [
+        {
+            "id": 1,
+            "user": 1,
+            "products": [
+                {
+                    "id": 1,
+                    "title": "Kajukatli 1 Kg Box",
+                    "category": "mithai-box",
+                    "image":"https://picsum.photos/400", 
+                    "price": 1000
+                },   
+                {
+                    "id": 2,
+                    "title": "Kajukatli 1 Kg Box",
+                    "category": "mithai-box",
+                    "image":"https://picsum.photos/400", 
+                    "price": 2000
+                }
+            ]
+        }
+    ]
+}
