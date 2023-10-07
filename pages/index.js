@@ -31,9 +31,11 @@ export default function Home() {
           </motion.div>
           {/* image div */}
           <motion.div initial={{opacity: 0, x: 500}} animate={{opacity: 1, x: 0}} transition={{duration: 2.5,damping: 100, stiffness: 1000}} className="slides col-span-12 md:col-span-8">
-            <img
+            <Image
               className="object-cover h-[26rem] md:h-[40rem] w-full h-96 rounded-md"
               src="/intro.jpg"
+              width={1000}
+              height={1000}
               alt=""
             />
             <div className="flex justify-center mt-2">

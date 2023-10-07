@@ -36,10 +36,12 @@ const ProductList = ({products}) => {
             <div className="rounded-md">
               <Link href={`/shop/product/${product.id}`}>
                 <div className="">
-                  <img
+                  <Image
                     className="w-full h-80 rounded-t-md"
                     src={product.image}
                     alt=""
+                    width={100}
+                    height={100}
                   />
                 </div>
                 <div className="py-3 px-2">

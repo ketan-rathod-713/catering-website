@@ -33,7 +33,7 @@ export const Footer = () => {
             </Link>
             <div className="mt-4 lg:max-w-sm">
               <p className="text-sm text-gray-800">
-                Thank you for visiting our website. Contact us for your precious event's catering.
+                Thank you for visiting our website. Contact us for your precious event&aposs catering.
               </p>
               <p className="mt-4 text-sm text-gray-800">
                 Address : C-33, Sarthak Row House, Village - Valthan, Kamrej, Surat - 394325.
