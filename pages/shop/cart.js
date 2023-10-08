@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import Navbar from "../../components/Navbar";
 import PagePadding from "../../components/PagePadding";
