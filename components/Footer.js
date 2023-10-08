@@ -90,7 +90,7 @@ export const Footer = () => {
               <ul className="mt-2 space-y-2">
                 <li>
                   <Link
-                    href="/shop"
+                    href="/shop/product"
                     className="text-gray-600 transition-colors duration-300 hover:text-deep-purple-accent-400"
                   >
                     Shopping Page

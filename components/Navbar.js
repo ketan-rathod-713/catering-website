@@ -13,8 +13,9 @@ const Navbar = () => {
       setOpenNavbar(true);
     }
   };
+
   return (
-    <div className="sticky navbar top-0">
+    <div className="sticky navbar top-0 relative z-20">
       <div className="nav flex justify-between px-10 py-4 bg-blue-900 items-center z-10 relative shadow-md shadow-gray-400">
         <Link href="/" className="text-xl font-bold text-white">Nakalang Caterers</Link>
         <div className="px-2 py-1 cursor-pointer" onClick={toggleNavbar}>
@@ -95,13 +96,13 @@ const Navbar = () => {
           VIEW GALLARY
         </Link>
         <Link
-          href={"/shop"}
+          href={"/shop/product"}
           className="px-6 py-1 bg-red-400 text-gray-900 font-bold shadow-md shadow-red-300"
         >
           SHOP NOW
         </Link>
         <Link
-          href={"/contact-us"}
+          href={"/contactus"}
           className="px-6 py-1 bg-blue-400 text-gray-900 font-bold shadow-md shadow-blue-300"
         >
           ENQUIRE NOW

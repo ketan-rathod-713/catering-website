@@ -9,8 +9,8 @@ import connectDB from "../../../db/mongooseConnect";
 import Product from "../../../models/Product";
 import PagePadding from './../../../components/PagePadding';
 import PageHeading from './../../../components/PageHeading';
-import {motion} from "framer-motion"
-
+import {motion} from "framer-motion";
+import Footer from "../../../components/Footer";
 // async function fetchProducts() {
 // const response = await fetch("/api/product");
 // const data = await response.json();
@@ -266,6 +266,8 @@ const ProductList = ({products}) => {
                     } </div>
                 </div>
             </PagePadding>
+
+            <Footer/>
         </div>
     );
 };
