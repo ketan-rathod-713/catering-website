@@ -48,3 +48,12 @@ const account = () => {
 };
 
 export default account;
+
+// get all account information for given user if valid authorised one
+export async function getServerSideProps(){
+
+
+  return {
+    props: 
+  }
+}
