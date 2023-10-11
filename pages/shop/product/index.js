@@ -131,7 +131,7 @@ const ProductList = ({products}) => {
 
     const addToCartButtonHandler = (product) => {
         console.log(product);
-
+        
     }
 
     const toggleSortDropdown = () => {
