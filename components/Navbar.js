@@ -76,13 +76,13 @@ const Navbar = () => {
               <div className="py-3" key={index}>
                 {item.btn ? (
                   <Link
-                    className="py-1 px-7 text-center bg-orange-700 text-white rounded-sm"
+                    className="py-1 px-7 text-center bg-white text-black rounded-md"
                     href={item.link}
                   >
                     {item.title}
                   </Link>
                 ) : (
-                  <Link className="lg:text-lg" href={item.link}>
+                  <Link className="lg:text-lg text-gray-300" href={item.link}>
                     {item.title}
                   </Link>
                 )}

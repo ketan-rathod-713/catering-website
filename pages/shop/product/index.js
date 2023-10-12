@@ -2,7 +2,7 @@
 // product page also needs to be there.
 
 import Link from "next/link";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, Suspense} from "react";
 import Image from "next/image";
 import Navbar from "../../../components/Navbar";
 import connectDB from "../../../db/mongooseConnect";
@@ -198,24 +198,26 @@ const ProductList = ({products}) => {
                                         </div>
                                     </div>
 
-                                    <div className="options flex flex-col space-y-4">
+                                    <motion.div key={filtersOpen[section.sectionName]} intial={{}} animate={{}} transition={{duration: 3}} className="options flex flex-col space-y-4">
                                         {/* all subsection items */}
 
                                         { filtersOpen[`${section.sectionName}`] &&
                                         section.items.map((item, index) => (
                                             <motion.div initial={{x: -100}} animate={{x: 0}} transition={{duration: index/5}} key={index}
-                                                className="flex space-x-5">
-                                                <input className="" type="checkbox"/>
+                                                className="flex space-x-5 items-center">
+                                                <input className="h-4 w-4" type="checkbox"/>
                                                 <div>{
                                                     item.name
                                                 }</div>
                                             </motion.div>
                                         ))
-                                    } </div>
+                                    } </motion.div>
                                 </div>
                             ))
                         } </div>
                     </div>
+
+                    <Suspense fallback={<h1>Loading..</h1>}>
                     <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-20">
                         {
                         products.map((product, index) => (
@@ -264,6 +266,7 @@ const ProductList = ({products}) => {
                             </div>
                         ))
                     } </div>
+                    </Suspense>
                 </div>
             </PagePadding>
 

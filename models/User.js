@@ -15,11 +15,15 @@ const userSchema = mongoose.Schema({
     },
     address: {
         type: String,
-        required: true
+        default: ""
     },
     phone: {
         type: String,
-        default: ""
+        required: true
+    },
+    admin: {
+        type: Boolean,
+        default: false
     }
 })
 
