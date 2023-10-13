@@ -10,6 +10,7 @@ const LoginPage = () => {
     const [formData, setFormData] = useState({
         email: "",
         password: "", 
+        error: ""
     });
 
     const handleInputChange = (event, attributeName)=>{
@@ -30,8 +31,13 @@ const LoginPage = () => {
         const data = await response.json()
     console.log(data);
         const token = data["token"];
-        Cookies.set("token", token)
-        router.push("/")
+        if(token){
+            Cookies.set("token", token)
+            router.push("/")
+        } else {
+            const errorMessage = data["message"] || "An error occured"
+            setFormData(prev => ({...prev, error: errorMessage }))
+        }
     }
     
   return <div className="">
@@ -42,7 +48,7 @@ const LoginPage = () => {
                 <div className="innerBox w-full lg:w-1/2 flex flex-col items-center space-y-6">
                     <div className="w-full">
                         <div htmlFor="email">Email</div>
-                        <input type="tel"  value={formData.email} onChange={(e) => handleInputChange(e, "email")} className="py-3 px-5 text-lg w-full border-blue-300 border-2"/>
+                        <input type="text"  value={formData.email} onChange={(e) => handleInputChange(e, "email")} className="py-3 px-5 text-lg w-full border-blue-300 border-2"/>
                     </div>
                     <div className="w-full">
                         <div htmlFor="password">Password</div>

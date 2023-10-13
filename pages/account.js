@@ -8,6 +8,10 @@ import jwt from 'jsonwebtoken';
 
 const Account = ({user}) => {
   const [userData, setUserData] = useState(user);
+
+  const toggleEdit = ()=>{
+
+  }
   
   return <div>
     <Navbar/>
