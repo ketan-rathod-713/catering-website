@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import PagePadding from "../components/PagePadding";
 import PageHeading from './../components/PageHeading';
+import authoriseUser from "../utils/authoriseUser"
+import jwt from 'jsonwebtoken';
 
-const account = () => {
+
+const Account = ({user}) => {
+  const [userData, setUserData] = useState(user);
+  
   return <div>
     <Navbar/>
-
     <PagePadding>
       <PageHeading>YOUR ACCOUNT</PageHeading>
       <div>
@@ -16,15 +20,15 @@ const account = () => {
           {/* left one */}
           <div className="flex-col flex">
             <label htmlFor="name">Name</label>
-            <input type="text" name="name" className="py-3 px-3 border-2 border-orange-400"/>
+            <input type="text" value={userData.name} name="name" className="py-3 px-3 border-2 border-orange-400"/>
           </div>
           <div className="flex-col flex">
             <label htmlFor="email">Email</label>
-            <input type="text" name="email" className="py-3 px-3 border-2 border-orange-400"/>
+            <input type="text" value={userData.email} name="email" className="py-3 px-3 border-2 border-orange-400"/>
           </div>
           <div className="flex-col flex">
             <label htmlFor="phone">Phone</label>
-            <input type="text" name="phone" className="py-3 px-3 border-2 border-orange-400"/>
+            <input type="text" value={userData.phone} name="phone" className="py-3 px-3 border-2 border-orange-400"/>
           </div>
         </div>
         <div className="col-span-1">
@@ -47,13 +51,27 @@ const account = () => {
   </div>;
 };
 
-export default account;
+export default Account;
 
-// get all account information for given user if valid authorised one
-// export async function getServerSideProps(){
+export async function getServerSideProps(context){
+  const token = await authoriseUser(context);
+
+  if(token){
+    const user = jwt.decode(token)
+    return {
+      props: {
+        user
+      }
+    }
+  } else {
+
+  }
 
 
-//   return {
-//     props: 
-//   }
-// }
+  return {
+    redirect: {
+      destination: "/auth/login",
+      permanent: false
+    }
+  }
+}

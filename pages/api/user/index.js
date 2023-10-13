@@ -1,6 +1,6 @@
 // / product
 import Product from "../../../models/Product.js";
-import connectDB from "../../../db/mongooseConnect.js";
+import connectDB from "../../../utils/mongooseConnect.js";
 import User from './../../../models/User';
 
 export default async function handler(req, res){
@@ -15,15 +15,15 @@ export default async function handler(req, res){
           }
     } 
     
-    // create product
+    // create user
     else if(req.method === "POST"){
       const {name, email, phone, password} = req.body;
       try{
         await connectDB();
         const user = new User({name, email, password, phone})
         await user.save();
-        
-        res.status(200).json(user)
+
+        res.status(200).json({user: user})
       } catch(err){
         console.log(err);
         res.status(500).json({error: "Server error"})

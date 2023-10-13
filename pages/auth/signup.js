@@ -10,25 +10,26 @@ const SignupPage = () => {
         name: "",
         email: "",
         phone: "",
-        password: "",
-        confirmPassword: ""
+        password: ""
     });
 
     const handleInputChange = (event, attributeName)=>{
         console.log(event.target.value, attributeName);
-        setFormData(prev => ({[attributeName]: event.target.value}))
+        setFormData(prev => ({...prev ,[attributeName]: event.target.value}))
     }
 
     const handleSignupClick = async ()=>{
+        console.log(formData);
         const response = await fetch("/api/user", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: formData
+            body: JSON.stringify(formData)
         })
+        console.log(response);
         const data = await response.json()
-        console.log(data);
+        
         router.push("/auth/login")
     }
     
@@ -54,10 +55,7 @@ const SignupPage = () => {
                         <div htmlFor="password">Password</div>
                         <input value={formData.password} onChange={(e)=>handleInputChange(e, "password")} type="password" className="py-3 px-5 text-lg w-full border-blue-300 border-2"/>
                     </div>
-                    <div className="w-full">
-                        <div htmlFor="password">Confirm Password</div>
-                        <input value={formData.confirmPassword} onChange={(e)=>handleInputChange(e, "confirmPassword")} type="password" className="py-3 px-5 text-lg w-full border-blue-300 border-2"/>
-                    </div>
+                    
                     <div className="flex justify-center py-5">
                         <button onClick={handleSignupClick} className="px-10 text-lg text-white rounded-sm py-3 bg-blue-500">SIGN UP</button>
                     </div>

@@ -12,7 +12,9 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "cookie": "^0.5.0",
+    "cookies": "^0.8.0",
     "framer-motion": "^10.16.4",
+    "js-cookie": "^3.0.5",
     "json-server": "^0.17.4",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.4",
