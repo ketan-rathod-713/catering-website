@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useRouter } from "next/router";
-import connectDB from "../../../db/mongooseConnect";
+import connectDB from "../../../utils/mongooseConnect";
 import mongoose from "mongoose";
 import Product from "../../../models/Product";
 import PagePadding from './../../../components/PagePadding';

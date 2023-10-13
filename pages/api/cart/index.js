@@ -1,6 +1,6 @@
 // / product
 import Product from "../../../models/Product.js";
-import connectDB from "../../../db/mongooseConnect.js";
+import connectDB from "../../../utils/mongooseConnect.js";
 import Cart from './../../../models/Cart';
 
 export default async function handler(req, res){

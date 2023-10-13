@@ -1,6 +1,6 @@
 // / product
 import Product from "../../../models/Product.js";
-import connectDB from "../../../db/mongooseConnect.js";
+import connectDB from "../../../utils/mongooseConnect.js";
 
 export default async function handler(req, res){
     if(req.method === "GET"){ // get all products, based on filters too

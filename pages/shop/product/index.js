@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, {useEffect, useState, Suspense} from "react";
 import Image from "next/image";
 import Navbar from "../../../components/Navbar";
-import connectDB from "../../../db/mongooseConnect";
+import connectDB from "../../../utils/mongooseConnect";
 import Product from "../../../models/Product";
 import PagePadding from './../../../components/PagePadding';
 import PageHeading from './../../../components/PageHeading';
