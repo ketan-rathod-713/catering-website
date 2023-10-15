@@ -57,8 +57,13 @@ const LoginPage = () => {
                     <div className="flex justify-center py-5">
                         <button onClick={handleSignupClick} className="px-10 text-lg text-white rounded-sm py-3 bg-blue-500">LOGIN</button>
                     </div>
+
+                    <div className="w-full">
+                        <div className="py-2 px-4 text-center bg-white text-black text-xl border-2 border-gray-400">Login with google</div>
+                    </div>
                  </div>
             </div>
+            
         </PagePadding>
   </div>;
 };

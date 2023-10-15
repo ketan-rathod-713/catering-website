@@ -12,10 +12,12 @@ export default async function handler(req, res){
             const user = await User.findOne({email: email, password: password})
            
             const payload = {
+                _id: user["_id"],
                 name: user["name"],
                 email: user["email"],
                 phone: user["phone"]
             };
+            
             const token = jwt.sign(payload, SECREAT_KEY)
             console.log(user);
             if(user){

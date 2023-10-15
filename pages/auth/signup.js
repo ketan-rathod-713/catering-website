@@ -3,6 +3,8 @@ import PagePadding from './../../components/PagePadding';
 import PageHeading from './../../components/PageHeading';
 import Navbar from './../../components/Navbar';
 import { useRouter } from "next/router";
+import { ToastContainer, toast } from 'react-toastify';
+import emitToast from './../../utils/emitToast';
 
 const SignupPage = () => {
     const router = useRouter()
@@ -27,16 +29,23 @@ const SignupPage = () => {
             },
             body: JSON.stringify(formData)
         })
-        console.log(response);
         const data = await response.json()
-        
-        router.push("/auth/login")
+        console.log(data);
+        if(response.status === 203){ // then account exist with given id.
+            console.log("account exist with given id TODO: add notification to it");
+            emitToast(toast, "An Account is already there with given emailId.")
+        } else if(response.status === 200){
+            router.push("/auth/login")
+        }
     }
     
   return <div className="">
         <Navbar/>
         <PagePadding>
             <PageHeading>SIGN UP</PageHeading>
+            <div>
+                <ToastContainer/>
+            </div>
             <div className="outerBox py-2 flex flex-col justify-center items-center">
                 <div className="innerBox w-full lg:w-1/2 flex flex-col items-center space-y-6">
                     <div className="w-full">

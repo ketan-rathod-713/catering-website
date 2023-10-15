@@ -11,6 +11,7 @@ import PagePadding from './../../../components/PagePadding';
 import PageHeading from './../../../components/PageHeading';
 import {motion} from "framer-motion";
 import Footer from "../../../components/Footer";
+import { ADD_PRODUCT } from "../../../data/actionTypes";
 // async function fetchProducts() {
 // const response = await fetch("/api/product");
 // const data = await response.json();
@@ -129,9 +130,18 @@ const ProductList = ({products}) => {
       }
     }
 
-    const addToCartButtonHandler = (product) => {
+    const addToCartButtonHandler = async (product) => {
         console.log(product);
         
+        const response = await fetch("/api/cart", {
+            method: "POST",
+            body: JSON.stringify({product: product, type: ADD_PRODUCT}),
+            headers:  {
+                "Content-Type": "application/json"
+            }
+        })
+
+        console.log(response)
     }
 
     const toggleSortDropdown = () => {
