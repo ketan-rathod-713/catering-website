@@ -10,9 +10,12 @@ export const cartProductSchema = mongoose.Schema({
     },
     quantity: {
         type: Number,
-        default: 1
+        default: 1,
+        required: true
     }
 })
+
+const CartProduct = mongoose.models.CartProduct || mongoose.model("CartProduct", cartProductSchema)
 
 const cartSchema = mongoose.Schema({
     user: {
@@ -22,24 +25,12 @@ const cartSchema = mongoose.Schema({
     },
     products : {
         type: [cartProductSchema],
-        default: []
+        default: [],
     },
     totalPrice: {
         type: Number,
         default: 0
     }
-})
-
-cartSchema.pre('save', function(next){
-    const products = this.products;
-    // Calculate the totalPrice based on the products in the cart
-    const totalPrice = products.reduce((total, product) => {
-        // Assuming each product has a price and quantity property
-        return total + (product.product.price * product.quantity);
-    }, 0);
-    console.log("updating mongodb");
-    this.totalPrice = totalPrice;
-    next();
 })
 
 const Cart = mongoose.models.Cart || mongoose.model("Cart", cartSchema);

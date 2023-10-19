@@ -1,3 +1,6 @@
+
+import Logout from './../utils/logoutClientSide';
+
 const navbarMenuItems = [
     { title: "Home", link: "/" },
     { title: "About", link: "/about" },
@@ -9,6 +12,7 @@ const navbarMenuItems = [
     { title: "Account", link: "/account" },
     { title: "LOGIN", link: "/auth/login", btn: true },
     { title: "SIGN UP", link: "/auth/signup", btn: true },
+    { title: "LOG OUT", link: "", btn: true, onClickFunction: Logout},
   ];
 
 export default navbarMenuItems;

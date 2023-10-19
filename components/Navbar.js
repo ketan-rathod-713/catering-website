@@ -78,6 +78,7 @@ const Navbar = () => {
                   <Link
                     className="py-1 px-7 text-center bg-white text-black rounded-md"
                     href={item.link}
+                    onClick={item.onClickFunction}
                   >
                     {item.title}
                   </Link>

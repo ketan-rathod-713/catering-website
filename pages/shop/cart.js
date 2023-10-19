@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../../components/Navbar";
 import PagePadding from "../../components/PagePadding";
@@ -10,6 +10,8 @@ import authoriseUser from "../../utils/authoriseUser";
 import mongoose from "mongoose";
 import CircularJSON from "circular-json"
 import { EDIT_QUANTITY, REMOVE_PRODUCT } from "../../data/actionTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteCartProductAsync, editCartProductAsync, fetchCartDataAsync, selectUserCartProducts, setCartProductsFromServerSideProps } from "../../store/cart/cartReducer";
 
 const rightInfo = [
     {name: "Price", value: 220},
@@ -38,36 +40,20 @@ const dummyCart = [
 ]
 
 const CartPage = ({cart}) => {      
-    console.log(cart)
     const router = useRouter();
+    const dispatch = useDispatch()
+    const userCartProducts = useSelector(selectUserCartProducts);
+
+    useEffect(()=>{
+        dispatch(setCartProductsFromServerSideProps(cart["products"]))
+    }, [dispatch])
 
     const editProductQuantityInCart = async (product, newQuantity) => {
-        console.log(product, newQuantity);
-
-        // sending cookies with it
-        const response = await fetch("/api/cart", {
-            method: "POST",
-            body: JSON.stringify({product: product, type: EDIT_QUANTITY, quantity: newQuantity}),
-            headers:  {
-                "Content-Type": "application/json"
-            }
-        })
-
-        console.log(response)
+        dispatch(editCartProductAsync({product, quantity: newQuantity}))
     }
 
     const deleteProductFromCart = async product => {
-        console.log(product);
-
-        const response = await fetch("/api/cart", {
-            method: "POST",
-            body: JSON.stringify({product: product, type: REMOVE_PRODUCT}),
-            headers:  {
-                "Content-Type": "application/json"
-            }
-        })
-
-        console.log(response)
+        dispatch(deleteCartProductAsync({product}))
     }
 
     const handleCheckoutClick = async ()=>{
@@ -86,13 +72,13 @@ const CartPage = ({cart}) => {
     {/* left all products */}
         <div className="flex-col space-y-10 col-span-4 lg:col-span-3">
             {
-                cart["products"].map((cartItem, index)=>
+                userCartProducts.map((cartItem, index)=>
                     <div key={index} className="grid grid-cols-6 gap-4 lg:gap-6">
                         <div className="col-span-2 md:col-span-1 lg:px-5">
                             <Image width={1000} height={1000} src="/intro.jpg" className="w-full aspect-square rounded-sm shadow-sm"/>
                         </div>
                         <div className="col-span-4 lg:col-span-5 flex flex-col space-y-2">
-                            <Link className="text-xl hover:text-blue-500 duration-300" href={`/shop/product/${cartItem._id}`}>{cartItem.product.title}</Link>
+                            <Link className="text-xl hover:text-blue-500 duration-300" href={`/shop/product/${cartItem.product._id}`}>{cartItem["product"]["title"]}</Link>
                             <div className="text-md text-gray-500">{cartItem.product.category}</div>
                             <div className="text-md text-gray-500">
                                 TODO: Rating Here
@@ -149,11 +135,23 @@ export default CartPage;
 export async function getServerSideProps(context){
     const {req} = context;
     const decodedToken = await authoriseUser(req)
+
+    if(!decodedToken){
+        return {
+            redirect: {
+              destination: "/auth/login",
+              permanent: false
+            }
+          }
+    }
+
     console.log(decodedToken)
     const cart = await Cart.findOne({user: decodedToken["_id"]}).populate("products.product").exec()
     
     const serialised = CircularJSON.stringify(cart)
     const jsonOne = CircularJSON.parse(serialised)
+
+   
 
     return {
         props: {
