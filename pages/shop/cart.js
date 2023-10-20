@@ -11,42 +11,17 @@ import mongoose from "mongoose";
 import CircularJSON from "circular-json"
 import { EDIT_QUANTITY, REMOVE_PRODUCT } from "../../data/actionTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteCartProductAsync, editCartProductAsync, fetchCartDataAsync, selectUserCartProducts, setCartProductsFromServerSideProps } from "../../store/cart/cartReducer";
-
-const rightInfo = [
-    {name: "Price", value: 220},
-    {name: "Delivery Charge", value: 100},
-]
-
-const dummyCart = [
-    {
-        _id: 1,
-        name: "The Wolrds Best Book 2022",
-        quantity: 1,
-        rating: 4
-    },
-    {
-        _id: 2,
-        name: "great one",
-        quantity: 1,
-        rating: 3
-    },
-    {
-        _id: 3,
-        name: "great one",
-        quantity: 1,
-        rating: 4.5
-    },
-]
+import {selectCartTotalPrice ,deleteCartProductAsync, editCartProductAsync, fetchCartDataAsync, selectUserCartProducts, setCartProductsFromServerSideProps } from "../../store/cart/cartReducer";
 
 const CartPage = ({cart}) => {      
     const router = useRouter();
     const dispatch = useDispatch()
     const userCartProducts = useSelector(selectUserCartProducts);
+    const cartTotalPrice = useSelector(selectCartTotalPrice);
 
     useEffect(()=>{
         dispatch(setCartProductsFromServerSideProps(cart["products"]))
-    }, [dispatch])
+    }, [])
 
     const editProductQuantityInCart = async (product, newQuantity) => {
         dispatch(editCartProductAsync({product, quantity: newQuantity}))
@@ -112,14 +87,14 @@ const CartPage = ({cart}) => {
                 Price Details
             </div>
             <div className="flex flex-col mt-10 space-y-5 text-xl">
-                {rightInfo.map((item, index)=><div key={index} className="flex justify-between">
-                    <div>{item.name}</div>
-                    <div>{item.value}</div>
-                </div>)}
+                <div className="flex justify-between">
+                    <div>Price</div>
+                    <div>{cartTotalPrice}</div>
+                </div>
             </div>
             <div className="flex justify-between font-bold text-xl mt-10">
                 <div>Total Amount </div>
-                <div>220</div>
+                <div>{cartTotalPrice}</div>
             </div>
             <div className="flex justify-center mt-10">
                 <button className="py-2 px-5 bg-blue-600 rounded-sm text-white" onClick={handleCheckoutClick}>Checkout</button>

@@ -40,7 +40,7 @@ const cartSlice = createSlice({
         error: ""
     },
     reducers: {
-      totalPriceCalculate: state => {
+      totalPriceCalculate: (state, action) => {
         // Redux Toolkit allows us to write "mutating" logic in reducers. It
         // doesn't actually mutate the state because it uses the Immer library,
         // which detects changes to a "draft state" and produces a brand new
@@ -52,6 +52,9 @@ const cartSlice = createSlice({
       },
       setCartProductsFromServerSideProps: (state, action) =>{
         state.cartProducts = action.payload;
+
+        const tp = calculateTotalPrice(action.payload);
+        state.totalPrice = tp;
       }
     },
     extraReducers: (builder) => {
@@ -62,6 +65,9 @@ const cartSlice = createSlice({
         .addCase(fetchCartDataAsync.fulfilled, (state, action) => {
           state.loading = false;
           state.cartProducts = action.payload.products;
+
+          const tp = calculateTotalPric(action.payload.products);
+          state.totalPrice = tp;
         })
         .addCase(fetchCartDataAsync.rejected, (state, action) => {
           state.loading = false;
@@ -92,6 +98,9 @@ const cartSlice = createSlice({
           });
         
           state.cartProducts = updatedCartProducts;
+
+          const totalPrice = calculateTotalPrice(state.cartProducts);
+          state.totalPrice = totalPrice;
         })
         .addCase(editCartProductAsync.rejected, (state, action) => {
           state.loading = false;
@@ -109,7 +118,10 @@ const cartSlice = createSlice({
           const productId = action.payload.deletedProduct._id;
           console.log(productId)
           const index = state.cartProducts.findIndex(element => element.product._id === productId)
-          state.cartProducts.splice(index, 1)
+          state.cartProducts.splice(index, 1);
+
+          const totalPrice = calculateTotalPrice(state.cartProducts);
+          state.totalPrice = totalPrice;
         })
         .addCase(deleteCartProductAsync.rejected, (state, action) => {
           state.loading = false;
@@ -117,10 +129,20 @@ const cartSlice = createSlice({
         })
     }
   })
+
+  const calculateTotalPrice = (products) =>{
+    let totalPrice = 0;
+    for(let i=0; i<products.length; i++){
+      totalPrice += products[i].product.price * products[i].quantity;
+    }
+    console.log(products)
+    return totalPrice;
+  }
   
   export const { totalPriceCalculate, decremented, setCartProductsFromServerSideProps} = cartSlice.actions
   
   export const selectUserCartProducts = (state) => state.cart.cartProducts;
+  export const selectCartTotalPrice = (state) => state.cart.totalPrice;
 
   export default cartSlice.reducer;
 
