@@ -27,15 +27,15 @@ export default async function handler(req, res){
     
     // add products to cart
     else if(req.method === "POST"){
-      const {product, quantity, type} = req.body;
-      product["quantity"] = 1
+      const {type} = req.body;
 
       await connectDB();
       const decodedToken = await authoriseUser(req)
       console.log("Decoded Token Log ",decodedToken);
 
       if(type === ADD_PRODUCT){
-
+        const {product, quantity} = req.body;
+        product["quantity"] = quantity || 1; // by default 1 if not specified
         // check if product already there in cart then increase quantity
         const cartThere = await Cart.findOne({user: decodedToken["_id"]})
         const products = cartThere["products"]
@@ -63,6 +63,7 @@ export default async function handler(req, res){
         }
 
       } else if(type === EDIT_QUANTITY){
+        const {product, quantity} = req.body;
           // i am given product and quatity 
           console.log("quantity ", quantity)
           const cart = await Cart.findOneAndUpdate({user: decodedToken["_id"], 'products.product': product["_id"]}, {
@@ -71,6 +72,7 @@ export default async function handler(req, res){
           console.log(cart)
           res.status(200).json({cart})
       } else if(type === REMOVE_PRODUCT){
+        const {product, quantity} = req.body;
           // only need product
           const cart = await Cart.findOneAndUpdate({user: decodedToken["_id"]}, {
             $pull: { "products": {"product": product["_id"]} }

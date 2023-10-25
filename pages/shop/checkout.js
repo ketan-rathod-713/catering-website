@@ -1,5 +1,5 @@
-import React from "react";
-import { selectUserCartProducts } from './../../store/cart/cartReducer';
+import React, { useState } from "react";
+import { resetCartProducts, resetCartProductsAsync, selectUserCartProducts } from './../../store/cart/cartReducer';
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,15 +8,26 @@ import { useDispatch } from "react-redux";
 import PagePadding from "../../components/PagePadding";
 import Navbar from "../../components/Navbar";
 import PageHeading from "../../components/PageHeading";
+import { createNewOrder } from "../../store/order/orderAPI";
+import { createNewOrderAsync, currentOrderFullfilled, setCurrentOrderFullfilledToFalse } from "../../store/order/orderReducer";
+import { useRouter } from "next/router";
 
 const Checkout = () => {
     const userCartProducts = useSelector(selectUserCartProducts);
     const cartTotalPrice = useSelector(selectCartTotalPrice);
-    const dispatch = useDispatch()
+    const [addressInput, setAddressInput] = useState("");
+    const [paymentOption, setPaymentOption] = useState("");
+    const router = useRouter();
+    const currentOrderFullFilledStatus = useSelector(currentOrderFullfilled)
+    
+    const dispatch = useDispatch();
 
     const handleOrderNowClick = async ()=>{
         // make order request and route it to my orders or home page
-        
+        console.log("address here", userCartProducts, cartTotalPrice, paymentOption); // don't take this cart total price as it is calculate there to and then decide.
+        dispatch(createNewOrderAsync({address: addressInput, paymentOption: paymentOption, products: userCartProducts, totalPrice: cartTotalPrice}))
+
+        // now go to order page if it is successfull.
     }
 
     const editProductQuantityInCart = async (product, newQuantity) => {
@@ -25,6 +36,12 @@ const Checkout = () => {
 
     const deleteProductFromCart = async product => {
         dispatch(deleteCartProductAsync({product}))
+    }
+
+    if(currentOrderFullFilledStatus){
+        dispatch(setCurrentOrderFullfilledToFalse())
+        dispatch(resetCartProductsAsync())
+        router.push("/shop/order")
     }
 
   return <div>
@@ -37,9 +54,23 @@ const Checkout = () => {
     <div className="my-10">
         <h1 className="text-xl font-bold">Order Details</h1>
         <div className="grid grid-cols-4 mt-4 gap-5">
-            <div className="flex-col flex col-span-2">
+            <div className="flex-col flex col-span-4">
                 <label htmlFor="name">Address</label>
-                <textarea type="text" name="address" className="py-3 px-3 border-2 border-gray-400"/>
+                <textarea type="text" value={addressInput} onChange={(e)=>setAddressInput(e.target.value)} name="address" placeholder="Enter Complete Address Including City, Area, Street Address, Pincode, etc.." className="py-3 px-3 border-2 h-20 border-gray-400"/>
+            </div>
+        </div>
+    </div>
+
+    <div className="my-10">
+        <h1 className="text-xl font-bold">Payment Options</h1>
+        <div className="flex flex-col space-y-5 mt-5">
+            <div className="flex items-center space-x-5">
+                <input type="radio" name="paymentOption" value="cash" onClick={(e)=>setPaymentOption(e.target.value)} className="h-5 w-5"/>
+                <span>Cash On Delivery</span>
+            </div>
+            <div className="flex items-center space-x-5">
+                <input type="radio" name="paymentOption" value="online" onClick={(e)=>setPaymentOption(e.target.value)} className="h-5 w-5"/>
+                <span>Online</span>
             </div>
         </div>
     </div>

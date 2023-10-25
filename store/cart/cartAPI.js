@@ -1,4 +1,4 @@
-import { EDIT_QUANTITY, REMOVE_PRODUCT } from "../../data/actionTypes";
+import { EDIT_QUANTITY, EMPTY_CART, REMOVE_PRODUCT } from "../../data/actionTypes";
 
 export const fetchCartData = () => {
   return new Promise(async (resolve, reject) => {
@@ -45,6 +45,24 @@ export const editQuantityCartProduct = ({product, quantity}) => {
         })
         const data = await response.json()
         resolve({data: data.cart, editedProduct: product, newQuantity: +quantity })
+    } catch(error){
+        reject({error})
+    }
+  });
+};
+
+export const resetCartProducts = () => { // for given user delete the cart items
+  return new Promise(async (resolve, reject) => {
+    try {
+        const response = await fetch("/api/cart", {
+            method: "POST",
+            body: JSON.stringify({type: EMPTY_CART}),
+            headers:  {
+                "Content-Type": "application/json"
+            }
+        })
+        const data = await response.json()
+        resolve({data})
     } catch(error){
         reject({error})
     }

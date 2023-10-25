@@ -1,10 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { deleteCartProduct, editQuantityCartProduct, editQunatityCartProduct, fetchCartData } from "./cartAPI";
+import { deleteCartProduct, editQuantityCartProduct, editQunatityCartProduct, fetchCartData, resetCartProducts } from "./cartAPI";
 
 // async actions
 export const fetchCartDataAsync = createAsyncThunk("cart/fetchCartData", async ()=> {
   try {
     const data = await fetchCartData(); // Use the cartAPI to fetch cart data
+    return data;
+  } catch (error) {
+    return {error}
+  }
+})
+// async actions
+export const resetCartProductsAsync = createAsyncThunk("cart/resetCartProducts", async ()=> {
+  try {
+    const data = await resetCartProducts(); // Use the cartAPI to fetch cart data
     return data;
   } catch (error) {
     return {error}
@@ -47,8 +56,8 @@ const cartSlice = createSlice({
         // immutable state based off those changes
         state.value += 1
       },
-      decremented: state => {
-        state.value -= 1
+      resetCartProducts: state => {
+        state.cartProducts = []
       },
       setCartProductsFromServerSideProps: (state, action) =>{
         state.cartProducts = action.payload;
@@ -127,6 +136,20 @@ const cartSlice = createSlice({
           state.loading = false;
           state.error = action.data.error;
         })
+
+        .addCase(resetCartProductsAsync.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(resetCartProductsAsync.fulfilled, (state, action) => {
+          state.loading = false;
+          console.log(action.payload)
+          state.cartProducts = []
+          state.totalPrice = 0
+        })
+        .addCase(resetCartProductsAsync.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.data.error;
+        })
     }
   })
 
@@ -139,7 +162,7 @@ const cartSlice = createSlice({
     return totalPrice;
   }
   
-  export const { totalPriceCalculate, decremented, setCartProductsFromServerSideProps} = cartSlice.actions
+  export const { totalPriceCalculate, setCartProductsFromServerSideProps} = cartSlice.actions
   
   export const selectUserCartProducts = (state) => state.cart.cartProducts;
   export const selectCartTotalPrice = (state) => state.cart.totalPrice;
