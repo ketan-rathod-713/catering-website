@@ -3,9 +3,8 @@ import SECREAT_KEY from "../data/secreateKey";
 import Cookies from "cookies";
 import User from './../models/User';
 
-export default async function handler(context){
+export default async function handler(req){
     try {
-        const {req} = context;
 
         const cookie = new Cookies(req);
         const token = cookie.get("token");
@@ -14,10 +13,15 @@ export default async function handler(context){
             jwt.verify(token, SECREAT_KEY);
             console.log("token verified");
 
-            // get user name and then return user information
-            const tokenPayload = jwt.decode(token)
-            const user = User.findOne({email: tokenPayload.email}).select("email phone name")
-            return user;
+            const decodedToken = jwt.decode(token)
+            // console.log(decodedToken)
+            const user = await User.find({_id: decodedToken["_id"]}).select("admin email").exec()
+            // console.log(user)
+            if(user[0] && user[0].admin === true){
+                return decodedToken;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

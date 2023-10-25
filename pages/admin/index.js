@@ -1,8 +1,13 @@
 import React from "react";
+import Navbar from './../../components/Navbar';
+import NavbarAdmin from "../../components/NavbarAdmin";
 
 const AdminPanel = () => {
   return <div>
-    Admin panel here
+    <NavbarAdmin/>
+    <div>
+      charts and all stats here
+    </div>
   </div>;
 };
 
