@@ -33,17 +33,17 @@ const ProductPage = ({product}) => {
         </div>
         {/* buttons */}
         <div className="flex-col space-y-5">
-          <div className="flex space-x-3 py-2 items-center justify-center bg-yellow-700 text-white hover:bg-yellow-600">
+          <div className="flex space-x-3 py-2 items-center justify-center bg-blue-700 text-white hover:bg-blue-600">
             <div>
               {/* icon */}
             </div>
             <div>
-              ADD TO BAG
+              ADD TO CART
             </div>
           </div>
           
 
-          <div className="flex space-x-3 py-2 items-center justify-center border-2 border-yellow-700 text-gray-800 hover:bg-yellow-100">
+          <div className="flex space-x-3 py-2 items-center justify-center border-2 border-blue-700 text-gray-800 hover:bg-blue-100">
             <div>
               {/* icon */}
             </div>
@@ -53,9 +53,21 @@ const ProductPage = ({product}) => {
           </div>
         </div>
         <div className="text-left">
-          <h1 className="text-xl font-bold">Product Details</h1>
+          <h1 className="text-xl font-bold text-blue-700">Product Details</h1>
           <div>
             {product.description}
+          </div>
+        </div>
+
+        <div className="text-left">
+          <h1 className="text-xl font-bold text-blue-700">Key Points</h1>
+          <div>
+            {product.keyPoints.map((keyPoint, index) => (
+              <div key={index} className="flex space-x-3">
+                <div> - </div>
+                <div> {keyPoint}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
