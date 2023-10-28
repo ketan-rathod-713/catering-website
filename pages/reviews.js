@@ -92,10 +92,12 @@ export default Reviews;
 export async function getServerSideProps(context){
 
       await connectDB();
-      const reviews = await Review.find({}).populate({
-        path: 'user',
-        select: 'name email', // Specify the fields you want to retrieve
-      })
+      const reviews = await Review.find({})
+      // .populate({
+      //   path: 'user',
+      //   select: 'name email', // Specify the fields you want to retrieve
+      // })
+      .populate("user")
       .exec();
       
       console.log(reviews)
