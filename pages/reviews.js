@@ -90,7 +90,7 @@ const Reviews = ({reviews, error}) => {
 export default Reviews;
 
 export async function getServerSideProps(context){
-  try {
+
       await connectDB();
       const reviews = await Review.find({}).populate({
         path: 'user',
@@ -107,14 +107,4 @@ export async function getServerSideProps(context){
           reviews: parsed
         }
       }
-    } catch (error) {
-      console.log(error)
-
-      return {
-        props: {
-          reviews: [],
-          error: error
-        }
-      }
-    }
 }
