@@ -11,11 +11,13 @@ import Review from "../models/Review";
 import connectDB from "../utils/mongooseConnect";
 import 'react-toastify/dist/ReactToastify.css';
 
-const Reviews = ({reviews}) => {
+const Reviews = ({reviews, error}) => {
   const [reviewData, setReviewData] = useState({
     rating: 5,
     reviewText: ""
   });
+
+  console.log(reviews, error)
 
   const handleReviewTextChange = (e)=>{
     setReviewData(prev => ({...prev, reviewText: e.target.value}))
@@ -110,7 +112,8 @@ export async function getServerSideProps(context){
 
       return {
         props: {
-          reviews: []
+          reviews: [],
+          error: error
         }
       }
     }
