@@ -11,13 +11,13 @@ import Review from "../models/Review";
 import connectDB from "../utils/mongooseConnect";
 import 'react-toastify/dist/ReactToastify.css';
 
-const Reviews = ({reviews, error}) => {
+const Reviews = ({reviews}) => {
   const [reviewData, setReviewData] = useState({
     rating: 5,
     reviewText: ""
   });
 
-  console.log(reviews, error)
+  console.log(reviews)
 
   const handleReviewTextChange = (e)=>{
     setReviewData(prev => ({...prev, reviewText: e.target.value}))
@@ -100,7 +100,6 @@ export async function getServerSideProps(context){
       .populate("user")
       .exec();
       
-      console.log(reviews)
       const serialised = JSON.stringify(reviews)
       const parsed = JSON.parse(serialised)
 
