@@ -155,10 +155,10 @@ const cartSlice = createSlice({
 
   const calculateTotalPrice = (products) =>{
     let totalPrice = 0;
+    console.log("total price calculate",products)
     for(let i=0; i<products.length; i++){
       totalPrice += products[i].product.price * products[i].quantity;
     }
-    console.log(products)
     return totalPrice;
   }
   

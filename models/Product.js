@@ -10,7 +10,8 @@ const productSchema = mongoose.Schema({
         required: true
     },
     keyPoints: {
-        type: [String],
+        type: [],
+        default: [],
         required: true
     },
     price: {

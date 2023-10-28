@@ -3,27 +3,7 @@ import Product from "../../../models/Product.js";
 import connectDB from "../../../utils/mongooseConnect.js";
 import {createRouter} from 'next-connect';
 import mongoose from "mongoose";
-import Grid from "gridfs-stream";
-import {createReadStream} from "fs";
-import { Readable } from "stream";
-import multer from "multer";
-import bodyParser from "body-parser";
-
-// Create a middleware function to increase the payload size limit
-const jsonParser = bodyParser.json({ limit: '10mb' });
-
-// Create GridFS stream
-let gfs;
-const conn = mongoose.connection;
-conn.once('open', () => {
-  gfs = Grid(conn.db, mongoose.mongo);
-  gfs.collection('uploads');
-});
-
-
-// Create a storage engine for multer
-const storage = multer.memoryStorage(); // Store the file in memory (you can change this as needed)
-const upload = multer({ storage: storage });
+import Image from "../../../models/Image.js";
 
 const handler = createRouter()
 
@@ -37,68 +17,32 @@ handler.get(async (req, res)=>{
   }
 })
 
-handler.get('/api/product/image/:id', async (req, res) => {
-  try {
-    const fileId = req.params.id;
-    const file = await gfs.files.findOne({ _id: fileId});
 
-    if (!file) {
-      return res.status(404).json({ error: 'File not found' });
-    }
+handler.post(async (req, res)=>{
+      const {title, description, price, category, image, keyPoints} = req.body;
+      console.log(title);
+      try{
+        await connectDB();
 
-    const readStream = gfs.createReadStream({ _id: fileId });
-    readStream.pipe(res);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Server error' });
-  }
-});
+        // const bufferData = Buffer.from(image, "base64");
 
+        // const imageModel = new Image({
+        //   name: new Date(),
+        //   data: bufferData,
+        //   contentType: "image"
+        // })
+        // await imageModel.save()
 
-handler.post(upload.single('image'), async (req, res)=>{
-  try {
-    jsonParser(req, res, ()=>{
-      // now getting parsed body which hass higher limit
-      if (!req.file) {
-        return res.status(400).json({ error: 'No file provided' });
+        // const imageId = imageModel._id;
+        // const imageUrl = "/api/uploads/"+imageId;
+        const product = new Product({title, description, price, category, image: image, keyPoints})
+        await product.save();
+
+        res.status(200).json(product)
+      } catch(err){
+        console.log(err);
+        res.status(500).json({error: "Server error"})
       }
-  
-      // Process the uploaded file and store it in GridFS
-      const readableStream = new Readable();
-      readableStream._read = () => {};
-      readableStream.push(req.file.buffer);
-      readableStream.push(null);
-  
-      const writeStream = gfs.createWriteStream({
-        filename: req.file.originalname,
-      });
-  
-      readableStream.pipe(writeStream);
-  
-      writeStream.on('close', async (file) => {
-        // Create a product with the image URL
-        const productData = {
-          title: req.body.title,
-          description: req.body.description,
-          price: req.body.price,
-          category: req.body.category,
-          image: `/api/product/image/${file._id}`, // Use the file's _id in the URL
-        };
-  
-        // Save the product in your MongoDB collection
-        // Replace 'YourProductModel' with your actual product model
-        // and 'YourProductCollection' with the actual collection name
-        // e.g., Product.create(productData);
-        // Replace this with your actual code
-  
-        return res.json({ message: 'Product created successfully' });
-      });      
-    })
-    
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Server error' });
-  }
 })
 
 export default handler.handler({
@@ -139,16 +83,16 @@ export default handler.handler({
 //         console.log(err)
 //         res.status(500).json({message: "error occured"})
 //       }
-//       // const {title, description, price, category, image} = req.body;
-//       // try{
-//       //   await connectDB();
-//       //   const product = new Product({title, description, price, category, image})
-//       //   await product.save();
+      // const {title, description, price, category, image} = req.body;
+      // try{
+      //   await connectDB();
+      //   const product = new Product({title, description, price, category, image})
+      //   await product.save();
 
-//       //   res.status(200).json(product)
-//       // } catch(err){
-//       //   console.log(err);
-//       //   res.status(500).json({error: "Server error"})
-//       // }
+      //   res.status(200).json(product)
+      // } catch(err){
+      //   console.log(err);
+      //   res.status(500).json({error: "Server error"})
+      // }
 //     }
 // }

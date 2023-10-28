@@ -83,7 +83,7 @@ const Checkout = () => {
                 userCartProducts.map((cartItem, index)=>
                     <div key={index} className="grid grid-cols-6 gap-4 lg:gap-6">
                         <div className="col-span-2 md:col-span-1 lg:px-5">
-                            <Image width={1000} height={1000} src="/intro.jpg" className="w-full aspect-square rounded-sm shadow-sm"/>
+                            <Image width={1000} height={1000} src={`${cartItem.product.image}`} className="w-full aspect-square rounded-sm shadow-sm"/>
                         </div>
                         <div className="col-span-4 lg:col-span-5 flex flex-col space-y-2">
                             <Link className="text-xl hover:text-blue-500 duration-300" href={`/shop/product/${cartItem.product._id}`}>{cartItem["product"]["title"]}</Link>

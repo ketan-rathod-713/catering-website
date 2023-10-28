@@ -2,33 +2,47 @@ import React, { useState } from "react";
 import NavbarAdmin from './../../components/NavbarAdmin';
 import PagePadding from './../../components/PagePadding';
 import PageHeading from './../../components/PageHeading';
+import emitToast from './../../utils/emitToast';
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Product = () => {
     const [createProduct, setCreateProduct] = useState(true);
     const [productData, setProductData] = useState({
         title: "",
         description: "",
-        image: "",
+        image: null,
         price: 0,
         category: ""
     });
+    const [keyPoints, setKeyPoints] = useState([]);
+    const [keyPoint, setKeyPoint] = useState("");
+    
+    
     const [imagePreview, setImagePreview] = useState("");
 
     const handleCreateProduct =async ()=>{
         console.log(productData);
 
-        let formData = new FormData();
-        formData.append("image", productData["image"])
-        formData.append("title", productData["title"])
-        formData.append("description", productData["description"])
-        formData.append("price", productData["price"])
-        formData.append("category", productData["category"])
-
+        const uploadData = {
+          ...productData,
+          image: imagePreview,
+          keyPoints: keyPoints
+        }
+        console.log(uploadData);
         const response = await fetch("/api/product", {
             method: "POST",
-            body: formData
+            body: JSON.stringify(uploadData),
+            headers: {
+              "Content-Type": "application/json"
+            }
         })
         
+        if(response.ok){
+          emitToast(toast, "Product Created Successfully")
+        } else {
+          emitToast(toast, data.error || "An error occured")
+        }
         const data = await response.json();
         console.log(data)
         console.log("data updated successfully");
@@ -38,21 +52,47 @@ const Product = () => {
         setProductData(prev => ({...prev ,[attributeName]: event.target.value}))
     }
 
+    const addKeyPoint = ()=>{
+      setKeyPoints(prev => ([
+        ...prev, keyPoint
+      ]))
+      setKeyPoint("")
+    }
+
         // Create an event handler to capture the selected image
     const handleImageChange = (event) => {
         const imageFile = event.target.files[0]; // Assuming you are allowing single file selection
         setProductData(prev => ({ ...prev, image: imageFile }));
 
         // Read the selected image file and set the imagePreview state
-        const reader = new FileReader(event.target.files[0]);
+        const reader = new FileReader(imageFile);
         reader.onload = (e) => {
             setImagePreview(e.target.result);
         };
         reader.readAsDataURL(imageFile);
     }
     
+    const handleKeyPointsChange = (e, index)=>{
+      const newValue = e.target.value;
+
+      const newArr = keyPoints.map((kp, i) => i === index ? {value: newValue} : kp)
+      setKeyPoints(newArr)
+      console.log(keyPoints);
+    }
+
+    const deleteKeyPoint = (e, index)=>{
+      console.log(index);
+      let newArray = [...keyPoints]
+      newArray.splice(index, 1)
+      setKeyPoints(newArray)
+    }
+
+    const handleKeyPointChange = (e)=>{
+      setKeyPoint(e.target.value)
+    }
   return <div>
     <NavbarAdmin/>
+    <ToastContainer/>
     <PagePadding>
         <PageHeading>CREATE PRODUCT</PageHeading>
 
@@ -88,6 +128,26 @@ const Product = () => {
               <label htmlFor="image">Product Image</label>
               <input type="file" onChange={handleImageChange}  name="product_image" className="py-3 px-3 border-2 border-gray-400"/>
             </div>
+
+            <div className="flex flex-col">
+            <label htmlFor="keyPoint">Add Key Points</label>
+            <input type="text" onChange={handleKeyPointChange} value={keyPoint} className="py-3 px-3 border-2 border-gray-400"/>
+            <button className="px-7 py-2 bg-blue-600 text-white mt-2 mb-3" onClick={addKeyPoint}>Add</button>
+
+            <div className="keyPoints w-full space-y-1">
+              {
+                keyPoints.map((point, index)=><div key={index} className="flex justify-between">
+                  <input type="text" onChange={(e) => handleKeyPointsChange(e, index)} value={point} name="keyPoint" className=" flex-1 px-3 border-2 border-gray-400"/>
+                  <button  onClick={(e) => deleteKeyPoint(e, index)} className="bg-red-700 text-white px-3">Delete</button>
+                </div>)
+              }
+            </div>
+          </div>
+        </div>
+        
+        
+
+        <div>
         </div>
 
         <button className="px-10 py-2 bg-red-600 text-white rounded-sm" onClick={handleCreateProduct}>CREATE PRODUCT</button>
