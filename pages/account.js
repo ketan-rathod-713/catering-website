@@ -51,7 +51,20 @@ const Account = ({user}) => {
           </button>
       </div> */}
       <div>
-        <ToastContainer/>
+      <div>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                    />
+                </div>
       </div>
       <div>
       {/* name */}
@@ -61,20 +74,20 @@ const Account = ({user}) => {
           {/* left one */}
           <div className="flex-col flex">
             <label htmlFor="name">Name</label>
-            <input contentEditable={"false"} onChange={(e)=>handleInputChange(e, "name")} type="text" value={userData.name} name="name" className="py-3 px-3 border-2 border-orange-400"/>
+            <input contentEditable={"false"} onChange={(e)=>handleInputChange(e, "name")} type="text" value={userData.name} name="name" className="py-3 px-3 border-2 border-gray-400"/>
           </div>
           <div className="flex-col flex">
             <label htmlFor="email">Email</label>
-            <input type="text" onChange={(e)=>handleInputChange(e, "email")}  value={userData.email} name="email" className="py-3 px-3 border-2 border-orange-400"/>
+            <input type="text" onChange={(e)=>handleInputChange(e, "email")}  value={userData.email} name="email" className="py-3 px-3 border-2 border-gray-400"/>
           </div>
           <div className="flex-col flex">
             <label htmlFor="phone">Phone</label>
-            <input type="text"  onChange={(e)=>handleInputChange(e, "phone")}  value={userData.phone} name="phone" className="py-3 px-3 border-2 border-orange-400"/>
+            <input type="text"  onChange={(e)=>handleInputChange(e, "phone")}  value={userData.phone} name="phone" className="py-3 px-3 border-2 border-gray-400"/>
           </div>
 
           <div className="flex-col flex">
               <label htmlFor="address">Address</label>
-              <input value={userData.address} type="text"  onChange={(e)=>handleInputChange(e, "address")}  name="address" className="py-3 px-3 border-2 border-orange-400"/>
+              <input value={userData.address} type="text"  onChange={(e)=>handleInputChange(e, "address")}  name="address" className="py-3 px-3 border-2 border-gray-400"/>
             </div>
         </div>
         
@@ -83,7 +96,7 @@ const Account = ({user}) => {
       </div>
 
       <div className="flex justify-center mt-20">
-        <button className="bg-red-500 text-white py-3 text-center px-7 rounded-sm" onClick={saveAccountHandler}>SAVE ACCOUNT</button>
+        <button className="bg-blue-600 text-white py-3 text-center px-7 rounded-sm" onClick={saveAccountHandler}>SAVE ACCOUNT</button>
       </div>
     </PagePadding>
   </div>;

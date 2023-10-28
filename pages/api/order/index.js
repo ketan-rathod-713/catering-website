@@ -21,14 +21,15 @@ export default async function handler(req, res){
     // create order
     else if(req.method === "POST"){
       const {address, products, totalPrice, paymentOption} = req.body;
-      
+      console.log(paymentOption)
+      console.log(typeof(paymentOption))
       // get user from cookies
       try{
         await connectDB();
         const decodedToken = await authoriseUser(req); // check if it is correct user or not 
 
         if(decodedToken){
-          const order = new Order({address, products, user: decodedToken["_id"], totalPrice, paymentOption})
+          const order = new Order({address, products, user: decodedToken["_id"], totalPrice: totalPrice, paymentOption: paymentOption})
           await order.save();
 
           res.status(200).json(order)

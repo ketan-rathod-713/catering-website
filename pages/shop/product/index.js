@@ -12,10 +12,12 @@ import PageHeading from './../../../components/PageHeading';
 import {motion} from "framer-motion";
 import Footer from "../../../components/Footer";
 import { ADD_PRODUCT } from "../../../data/actionTypes";
-// async function fetchProducts() {
-// const response = await fetch("/api/product");
-// const data = await response.json();
-// }
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Make sure to import the CSS as well.
+import emitToast from './../../../utils/emitToast';
+import Pagination from "../../../components/Pagination";
+import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 
 const filters = [
     {
@@ -106,8 +108,8 @@ const dropdownSort = [
 const ProductList = ({products}) => {
     const [openSortDropdown, setOpenSortDropdown] = useState(false);
     const [filtersOpen, setfiltersOpen] = useState({});
+    const router = useRouter()
     
-
     useEffect(() => {
         console.log("use effect called");
 
@@ -133,15 +135,25 @@ const ProductList = ({products}) => {
     const addToCartButtonHandler = async (product) => {
         console.log(product);
         
-        const response = await fetch("/api/cart", {
-            method: "POST",
-            body: JSON.stringify({product: product, type: ADD_PRODUCT}),
-            headers:  {
-                "Content-Type": "application/json"
+        const token = Cookies.get("token")
+        if(!token){
+            router.push("/auth/login")
+        } else {
+            const response = await fetch("/api/cart", {
+                method: "POST",
+                body: JSON.stringify({product: product, type: ADD_PRODUCT}),
+                headers:  {
+                    "Content-Type": "application/json"
+                }
+            })
+    
+            if(response.ok){
+                emitToast(toast, "Product Added To Cart")
+            } else {
+                emitToast(toast, "An Error Occured")
             }
-        })
-
-        console.log(response)
+            console.log(response)
+        }
     }
 
     const toggleSortDropdown = () => {
@@ -159,7 +171,20 @@ const ProductList = ({products}) => {
 
             <PagePadding>
                 <PageHeading>Products</PageHeading>
-
+               
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                    />
+          
                 <div className="flex justify-between mb-8">
                     <div> {/* NEW ARRIVALS */} </div>
                     <div className="relative">
@@ -265,7 +290,7 @@ const ProductList = ({products}) => {
                                         </div>
                                     </Link>
                                     <div className="mt-2">
-                                        <button className="px-4 py-2 bg-red-700 text-white w-full rounded-b-md"
+                                        <button className="px-4 py-2 bg-red-600 text-white w-full rounded-b-md active:bg-red-900"
                                             onClick={
                                                 () => addToCartButtonHandler(product)
                                         }>
@@ -275,9 +300,15 @@ const ProductList = ({products}) => {
                                 </div>
                             </div>
                         ))
-                    } </div>
+                    }
+                        <div className="flex justify-start lg:col-span-3 mt-10">
+                        <Pagination/>
+                        </div>
+                     </div>
                     </Suspense>
                 </div>
+
+               
             </PagePadding>
 
             <Footer/>

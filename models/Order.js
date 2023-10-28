@@ -35,6 +35,15 @@ const orderSchema = mongoose.Schema({
         type: String,
         default: "ongoing",
         required: true
+    },
+    timeWhenOrdered: {
+        type: Date,
+        default: new Date(),
+        required: true
+    },
+    paymentOption: {
+        type: String,
+        required: true
     }
 })
 
