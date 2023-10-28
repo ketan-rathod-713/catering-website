@@ -132,7 +132,10 @@ export async function getServerSideProps(context) {
   const decodedToken = await authoriseAdmin(req);
 
   // now get all the orders associated
-  const orders = await Order.find({}).populate("user"); // get only specific details of user
+  const orders = await Order.find({}).populate({
+    path: 'user',
+    select: 'name email address phone'
+  })
   console.log(orders);
   const serialised = JSON.stringify(orders);
   const parsed = JSON.parse(serialised);

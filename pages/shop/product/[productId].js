@@ -7,12 +7,41 @@ import Product from "../../../models/Product";
 import PagePadding from './../../../components/PagePadding';
 import Image from "next/image";
 import Navbar from "../../../components/Navbar";
+import Cookies from "js-cookie";
+import { ADD_PRODUCT } from "../../../data/actionTypes";
+import emitToast from "../../../utils/emitToast";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProductPage = ({product}) => {
     const router = useRouter()
     
+    const addToCartButtonHandler = async (product) => {
+      console.log(product);
+      
+      const token = Cookies.get("token")
+      if(!token){
+          router.push("/auth/login")
+      } else {
+          const response = await fetch("/api/cart", {
+              method: "POST",
+              body: JSON.stringify({product: product, type: ADD_PRODUCT}),
+              headers:  {
+                  "Content-Type": "application/json"
+              }
+          })
+  
+          if(response.ok){
+              emitToast(toast, "Product Added To Cart")
+          } else {
+              emitToast(toast, "An Error Occured")
+          }
+          console.log(response)
+      }
+  }
   return <div>
   <Navbar/>
+  <ToastContainer/>
    <PagePadding>
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
       <div className="lg:col-span-2 relative z-0">
@@ -33,7 +62,7 @@ const ProductPage = ({product}) => {
         </div>
         {/* buttons */}
         <div className="flex-col space-y-5">
-          <div className="flex space-x-3 py-2 items-center justify-center bg-blue-700 text-white hover:bg-blue-600">
+          <div onClick={(e) => addToCartButtonHandler(product)} className="flex space-x-3 py-2 items-center justify-center bg-blue-700 text-white hover:bg-blue-600 cursor-pointer">
             <div>
               {/* icon */}
             </div>
@@ -43,7 +72,7 @@ const ProductPage = ({product}) => {
           </div>
           
 
-          <div className="flex space-x-3 py-2 items-center justify-center border-2 border-blue-700 text-gray-800 hover:bg-blue-100">
+          <div className="flex space-x-3 py-2 items-center justify-center border-2 border-blue-700 text-gray-800 hover:bg-blue-100 cursor-pointer">
             <div>
               {/* icon */}
             </div>
