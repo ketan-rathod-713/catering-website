@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    // mongodb+srv://admin-ketan:Ketan@cluster0.odeen.mongodb.net/
+    // mongodb+srv://admin-ketan:Ketan@cluster0.odeen.mongodb.net/nakalangcaterers
     // mongodb://127.0.0.1:27017/nakalangcaterers
     await mongoose.connect('mongodb+srv://admin-ketan:Ketan@cluster0.odeen.mongodb.net/nakalangcaterers', {
       useNewUrlParser: true,

@@ -10,6 +10,8 @@ import { ToastContainer, toast } from "react-toastify";
 import Review from "../models/Review";
 import connectDB from "../utils/mongooseConnect";
 import 'react-toastify/dist/ReactToastify.css';
+import User from "../models/User";
+import mongoose from "mongoose"
 
 const Reviews = ({reviews}) => {
   const [reviewData, setReviewData] = useState({
@@ -24,7 +26,7 @@ const Reviews = ({reviews}) => {
   }
 
   const createReview = async ()=> {
-
+    console.log(reviewData)
     const response = await fetch("/api/review", {
       method: "POST",
       body: JSON.stringify(reviewData),
@@ -93,10 +95,6 @@ export async function getServerSideProps(context){
 
       await connectDB();
       const reviews = await Review.find({})
-      // .populate({
-      //   path: 'user',
-      //   select: 'name email', // Specify the fields you want to retrieve
-      // })
       .populate("user")
       .exec();
       

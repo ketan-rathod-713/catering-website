@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import Product from "./Product";
+import User from "./User";
 
 const ProductReviewSchema = mongoose.Schema({
     reviewText: {

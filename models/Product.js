@@ -25,6 +25,11 @@ const productSchema = mongoose.Schema({
     image: {
         type: String,
         required: true
+    },
+    averageRating: {
+        type: Number,
+        default: 5,
+        required: true
     }
 })
 

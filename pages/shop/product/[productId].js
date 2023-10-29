@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Rating from "react-rating";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import ProductReview from "../../../models/ProductReview";
+import User from "../../../models/User";
 
 const ProductPage = ({product, reviews}) => {
     const router = useRouter()
@@ -86,7 +87,7 @@ const ProductPage = ({product, reviews}) => {
       <div className="lg:col-span-1 text-center flex-col space-y-7">
       {/* all items */}
         <div className="text-3xl font-bold">{product.title}</div>
-        <div><Rating initialRating={3.5} emptySymbol={<FontAwesomeIcon icon={faStar} style={{ color: 'lightgray', width: "30px", height:"30px"}}/>} fullSymbol={<FontAwesomeIcon icon={faStar} style={{ color: 'gold',width: "30px", height:"30px" }}/>} stop={5} fractions={2} readonly/></div>
+        <div><Rating initialRating={product?.averageRating} emptySymbol={<FontAwesomeIcon icon={faStar} style={{ color: 'lightgray', width: "30px", height:"30px"}}/>} fullSymbol={<FontAwesomeIcon icon={faStar} style={{ color: 'gold',width: "30px", height:"30px" }}/>} stop={5} fractions={2} readonly/></div>
         <div className="flex-col">
           <div className="text-3xl">RS {product.price}</div>
           <div className="text-gray-700">Price inclusive of all taxes</div>

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import NavbarAdmin from './../../components/NavbarAdmin';
-import PagePadding from './../../components/PagePadding';
-import PageHeading from './../../components/PageHeading';
-import emitToast from './../../utils/emitToast';
+import NavbarAdmin from "../../../components/NavbarAdmin";
+import PagePadding from '../../../components/PagePadding';
+import PageHeading from '../../../components/PageHeading';
+import emitToast from '../../../utils/emitToast';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -39,6 +39,14 @@ const Product = () => {
         })
         
         if(response.ok){
+          setKeyPoints([])
+          setProductData({
+            title: "",
+            description: "",
+            image: null,
+            price: 0,
+            category: ""
+          })
           emitToast(toast, "Product Created Successfully")
         } else {
           emitToast(toast, data.error || "An error occured")
@@ -74,8 +82,7 @@ const Product = () => {
     
     const handleKeyPointsChange = (e, index)=>{
       const newValue = e.target.value;
-
-      const newArr = keyPoints.map((kp, i) => i === index ? {value: newValue} : kp)
+      const newArr = keyPoints.map((kp, i) => i === index ? newValue : kp)
       setKeyPoints(newArr)
       console.log(keyPoints);
     }
