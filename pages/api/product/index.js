@@ -4,14 +4,35 @@ import connectDB from "../../../utils/mongooseConnect.js";
 import {createRouter} from 'next-connect';
 import mongoose from "mongoose";
 import Image from "../../../models/Image.js";
+import { TIME_NEWEST_FIRST, TIME_OLDEST_FIRST, RATING_HIGH_FIRST, RATING_LOW_FIRST, PRICE_HIGH_FIRST, PRICE_LOW_FIRST} from './../../../data/sortProductTypes';
 
 const handler = createRouter()
 
 handler.get(async (req, res)=>{
+  const {page, limit, sort} = req.query;
+
+  // if page no is 1 then skip = 0 and if page 2 then skip will be limit per page that for eg. 10
+  const skip = (page - 1) * limit; // pagination
   try {
     await connectDB();
-    const products = await Product.find();
-    res.status(200).json(products);
+    
+    if(sort === PRICE_HIGH_FIRST){
+      const products = await Product.find().skip(skip).limit(limit).sort({price: -1})
+      return res.status(200).json(products);
+    } else if(sort === PRICE_LOW_FIRST){
+      const products = await Product.find().skip(skip).limit(limit).sort({price: 1})
+      return res.status(200).json(products);
+    } else if(sort === RATING_HIGH_FIRST){
+      const products = await Product.find().skip(skip).limit(limit).sort({averageRating: -1})
+      return res.status(200).json(products);
+    } else if(sort === RATING_LOW_FIRST){
+      const products = await Product.find().skip(skip).limit(limit).sort({averageRating: 1})
+      return res.status(200).json(products);
+    }else {
+      const products = await Product.find().skip(skip).limit(limit);
+      return res.status(200).json(products);
+    }
+    
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
@@ -51,48 +72,3 @@ export default handler.handler({
     res.status(err.statusCode || 500).end(err.message);
   },
 });
-
-
-// export default async function handler(req, res){
-//     if(req.method === "GET"){ // get all products, based on filters too
-       
-//     } 
-    
-//     // create product
-//     else if(req.method === "POST"){
-//       console.log("wow post req");
-//       try{
-//           console.log("great");
-//           await connectDB();
-//           const form = formidable({});
-//           console.log("great2");
-//           let fields;
-//           let files;
-
-//           form.parse(req, (err, fields, files) => {
-//             if (err) {
-//               next(err);
-//               return;
-//             }
-//             console.log(fields, files)
-//           });
-
-//           console.log("great3");
-//           console.log("wow",fields, files)
-//       } catch(err){
-//         console.log(err)
-//         res.status(500).json({message: "error occured"})
-//       }
-      // const {title, description, price, category, image} = req.body;
-      // try{
-      //   await connectDB();
-      //   const product = new Product({title, description, price, category, image})
-      //   await product.save();
-
-      //   res.status(200).json(product)
-      // } catch(err){
-      //   console.log(err);
-      //   res.status(500).json({error: "Server error"})
-      // }
-//     }
-// }

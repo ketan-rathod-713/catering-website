@@ -18,6 +18,10 @@ import emitToast from './../../../utils/emitToast';
 import Pagination from "../../../components/Pagination";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import { POPULAR_HIGH_FIRST, PRICE_HIGH_FIRST, PRICE_LOW_FIRST, RATING_HIGH_FIRST, RATING_LOW_FIRST, TIME_NEWEST_FIRST } from "../../../data/sortProductTypes";
+import Rating from "react-rating";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 const filters = [
     {
@@ -90,25 +94,72 @@ const categories = [
 
 const dropdownSort = [
     {
-        name: "Most Popular"
+        name: "Most Popular",
+        value: POPULAR_HIGH_FIRST
     },
     {
-        name: "Newest"
+        name: "Best Rating",
+        value: RATING_HIGH_FIRST
     },
     {
-        name: "Best Rating"
+        name: "Lowest Rating",
+        value: RATING_LOW_FIRST
     },
     {
-        name: "Price: Low to High"
+        name: "Price: Low to High",
+        value: PRICE_LOW_FIRST
     }, {
-        name: "Price: High to Low"
+        name: "Price: High to Low",
+        value: PRICE_HIGH_FIRST
     },
 ]
 
-const ProductList = ({products}) => {
+const ProductList = ({products, limit, totalDocs}) => {
+    const [Products, setProducts] = useState(products);
     const [openSortDropdown, setOpenSortDropdown] = useState(false);
     const [filtersOpen, setfiltersOpen] = useState({});
-    const router = useRouter()
+    const [sortType, setsortType] = useState(null);
+    const [page, setPage] = useState(1);
+    
+    const router = useRouter();
+
+    const pageChangeHandler =async (newPage)=> {
+        if(newPage != page){
+            setPage(newPage)
+            // fetch items
+            const response = await fetch(`/api/product?page=${newPage}&limit=${limit}&sort=${sortType}`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "GET"
+            }) 
+
+            const products = await response.json();
+
+            setProducts(products)
+
+            console.log(products)
+        }
+    }
+    
+    const handleSortClicked = async ( newSortType ) => {
+        if(sortType != newSortType){
+            setsortType(newSortType)
+            // fetch items
+            const response = await fetch(`/api/product?page=${page}&limit=${limit}&sort=${newSortType}`, {
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                method: "GET"
+            }) 
+
+            const products = await response.json();
+
+            setProducts(products)
+
+            console.log(products)
+        }
+    }
     
     useEffect(() => {
         console.log("use effect called");
@@ -202,7 +253,7 @@ const ProductList = ({products}) => {
                         openSortDropdown && <div className="absolute top-10 right-10 bg-white w-52 p-3 space-y-1 rounded-sm z-0">
                             { 
                             dropdownSort.map((item, index) => (
-                                <div key={index}
+                                <div key={index} onClick={(e)=> handleSortClicked(item.value)}
                                     className="text-lg hover:shadow-md hover:shadow-gray-500 p-1 rounded-md cursor-pointer">
                                     {
                                     item.name
@@ -255,7 +306,7 @@ const ProductList = ({products}) => {
                     <Suspense fallback={<h1>Loading..</h1>}>
                     <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-20">
                         {
-                        products.map((product, index) => (
+                        Products.map((product, index) => (
                             <div className="w-full col-span-1"
                                 key={index}>
                                 <div className="rounded-md">
@@ -274,9 +325,15 @@ const ProductList = ({products}) => {
                                                 height={100}/>
                                         </div>
                                         <div className="py-3 px-2">
-                                            <div>{
-                                                product.title
-                                            }</div>
+                                            <div>
+                                                <div>
+                                                    {product.title}
+                                                </div>
+                                                <div className="flex space-x-3">
+                                                <Rating initialRating={product?.averageRating} emptySymbol={<FontAwesomeIcon icon={faStar} style={{ color: 'lightgray', width: "15px", height:"15px"}}/>} fullSymbol={<FontAwesomeIcon icon={faStar} style={{ color: 'gold',width: "15px", height:"15px" }}/>} stop={5} fractions={2} readonly/>
+                                                <div>{product.averageRating}</div>
+                                                </div>
+                                            </div>
                                             <div className="flex justify-between mt-1">
                                                 <div className="rounded-md bg-blue-800 text-white px-2">
                                                     {
@@ -302,7 +359,7 @@ const ProductList = ({products}) => {
                         ))
                     }
                         <div className="flex justify-start lg:col-span-3 mt-10">
-                        <Pagination/>
+                        <Pagination page={page} totalPages={Math.ceil(totalDocs/limit)} pageChangeHandler={pageChangeHandler}/>
                         </div>
                      </div>
                     </Suspense>
@@ -319,13 +376,16 @@ const ProductList = ({products}) => {
 export default ProductList;
 
 export async function getServerSideProps() {
-    // fetch all products
-    // const response = await fetch("api");
-    // const data = await response.json();
+    
+    // here define page and limit
+    const page = 1;
+    const limit = 5;
+    const skip = 0;
 
-    // assume it is server
     await connectDB()
-    const products = await Product.find().lean();
+    const totalDocs = await Product.countDocuments();
+    const totalPages = Math.ceil(totalDocs / limit)
+    const products = await Product.find().skip(skip).limit(limit).lean()
     const serializedProducts = products.map((product) => {
         return {
             ...product,
@@ -334,7 +394,9 @@ export async function getServerSideProps() {
     });
     return {
         props: {
-            products: serializedProducts
+            products: serializedProducts,
+            totalDocs,
+            limit
         }
     }
 }

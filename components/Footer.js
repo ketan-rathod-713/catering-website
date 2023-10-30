@@ -109,7 +109,7 @@ export const Footer = () => {
               </ul>
             </div>
             <div className="col-span-2 w-full flex justify-center mt-10 sm:mt-0">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1423.7962193558492!2d72.97096202763157!3d21.20684289098327!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be045390c914943%3A0xb12976f0586cfac0!2sNakalang%20Caterers!5e0!3m2!1sen!2sin!4v1696661137664!5m2!1sen!2sin" width="400" height="300" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1423.7962193558492!2d72.97096202763157!3d21.20684289098327!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be045390c914943%3A0xb12976f0586cfac0!2sNakalang%20Caterers!5e0!3m2!1sen!2sin!4v1696661137664!5m2!1sen!2sin" width="400" height="300" loading="lazy"></iframe>
             </div>
           </div>
         </div>
