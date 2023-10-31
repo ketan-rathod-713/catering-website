@@ -1,7 +1,7 @@
 import React from "react";
 import NotAuthorised from "../../components/NotAuthorised";
 
-const ReviewsPage = () => {
+const ReviewsPage = ({error}) => {
   if(error){
     return <div>
         <NotAuthorised message={error}/>
