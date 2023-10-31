@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import emitToast from './../../utils/emitToast';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import Auth from "../../components/Auth";
 
 const LoginPage = () => {
     const router = useRouter()
@@ -63,8 +64,8 @@ const LoginPage = () => {
                         <button onClick={handleSignupClick} className="px-10 text-lg text-white rounded-sm py-3 bg-blue-600">LOGIN</button>
                     </div>
 
-                    <div className="w-full">
-                        <div className="py-2 px-4 text-center bg-white text-black text-xl border-2 border-gray-400">Login with google</div>
+                    <div>
+                        <Auth/>
                     </div>
                  </div>
             </div>

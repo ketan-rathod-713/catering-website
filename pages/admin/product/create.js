@@ -5,8 +5,9 @@ import PageHeading from '../../../components/PageHeading';
 import emitToast from '../../../utils/emitToast';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import NotAuthorised from "../../../components/NotAuthorised";
 
-const Product = () => {
+const Product = ({error}) => {
     const [createProduct, setCreateProduct] = useState(true);
     const [productData, setProductData] = useState({
         title: "",
@@ -97,6 +98,13 @@ const Product = () => {
     const handleKeyPointChange = (e)=>{
       setKeyPoint(e.target.value)
     }
+
+    if(error){
+      return <div>
+          <NotAuthorised message={error}/>
+      </div>
+  }
+
   return <div>
     <NavbarAdmin/>
     <ToastContainer/>

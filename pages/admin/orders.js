@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import NavbarAdmin from "../../components/NavbarAdmin";
 import PageHeading from "./../../components/PageHeading";
 import PagePadding from "./../../components/PagePadding";
@@ -7,8 +7,28 @@ import Order from "./../../models/Order";
 import { data } from "autoprefixer";
 import Image from "next/image";
 import Link from "next/link";
+import NotAuthorised from './../../components/NotAuthorised';
+import { useDispatch, useSelector } from "react-redux";
+import { deliverOrderAsync, selectAdminOrders, setAllOrdersFromServerSide } from "../../store/order/orderReducer";
+import { DELIVERED, ONGOING } from "../../data/orderStatus";
 
-const orders = ({ orders }) => {
+const Orders = ({ orders, error }) => {
+  const dispatch = useDispatch()
+  const adminOrders = useSelector(selectAdminOrders)
+
+  useEffect(()=> {
+    dispatch(setAllOrdersFromServerSide(orders))
+  }, [])
+
+  const deliverOrder = (orderId)=> {
+    dispatch(deliverOrderAsync({orderId}))
+  }
+
+  if(error){
+    return <div>
+        <NotAuthorised message={error}/>
+    </div>
+}
   return (
     <div>
       <NavbarAdmin />
@@ -22,7 +42,7 @@ const orders = ({ orders }) => {
         </div> */}
         <div>
           {/* all products */}
-          <div className="flex flex-col">
+          <div className="flex flex-col space-y-10">
             <div className="grid grid-cols-6 font-bold text-xl pb-2 border-b-2 border-gray-200 px-2 hidden lg:visible">
               <div>User</div>
               <div className="col-span-2">Products Bought</div>
@@ -30,13 +50,13 @@ const orders = ({ orders }) => {
               <div>Status</div>
               <div>Actions</div>
             </div>
-            {orders.map((order, index) => (
+            {adminOrders.map((order, index) => (
               <div
                 key={index}
-                className="grid gap-2 lg:gap-1 grid-cols-6 py-2 border-b-2 border-gray-200 px-2"
+                className="grid gap-2 duration-100 hover:bg-gray-100 lg:gap-1 grid-cols-6 py-2 border-2 border-gray-200 rounded-md px-2"
               >
                 <div className="flex flex-col col-span-6 lg:col-span-1">
-                  <div>{order.user.name}</div>
+                  <div className="text-gray-900 font-bold text-xl">{order.user.name}</div>
                   <div>{order.user.email}</div>
                   <div>{order.user.phone}</div>
                   <div className="font-bold mt-4">Order Id: {order._id}</div>
@@ -53,7 +73,7 @@ const orders = ({ orders }) => {
                           <Image
                             width={1000}
                             height={1000}
-                            src="/intro.jpg"
+                            src={`${product.product.image}`}
                             className="w-full aspect-square rounded-sm shadow-sm"
                           />
                         </div>
@@ -89,13 +109,18 @@ const orders = ({ orders }) => {
                   </div>
                 </div>
                 <div className="col-span-6 lg:col-span-1">
-                  <div className="font-bold text-xl">{order.totalPrice}</div>
-                  <div className="text-xl">{order.paymentOption}</div>
+                  <div className="font-bold text-xl">{order.totalPrice} RS</div>
+                  <div className="flex space-x-2">
+                  <div>PAYMENT OPTION : </div>
+                  <div className="text-upper">{order.paymentOption}</div>
+                  </div>
                 </div>
                 <div className="flex flex-col space-y-2 justify-start  lg:items-start col-span-6 lg:col-span-1">
                   <div
-                    className={`rounded-md px-5 h-fit ${
-                      order.status === "ongoing" && "bg-yellow-500 text-white"
+                    className={`rounded-lg px-5 py-1 h-fit ${
+                      order.status === ONGOING && "bg-yellow-700 text-white"
+                    } ${
+                      order.status === DELIVERED && "bg-green-700 text-white"
                     }`}
                   >
                     {order.status}
@@ -104,15 +129,15 @@ const orders = ({ orders }) => {
                     Ordered On {order.timeWhenOrdered}
                   </div>
                 </div>
-                <div className="flex space-x-2 items-start col-span-6 lg:col-span-1">
-                  <button className="px-4 py-1 bg-red-400 text-white">
+                <div className="flex flex-col space-y-2 col-span-6 lg:col-span-1">
+                  <button className="px-4 py-1 border-2 rounded-md bg-orange-600 hover:bg-white hover:border-2 hover:border-orange-600 hover:text-gray-900 duration-200 text-white h-fit">
                     EDIT
                   </button>
-                  <button className="px-4 py-1 bg-green-400 text-white">
-                    Delivered Order
+                  <button onClick={(e)=> deliverOrder(order._id)} className="px-4 py-1 border-2 rounded-md bg-green-600 text-white h-fit  hover:bg-white hover:border-2 hover:border-green-600 hover:text-gray-900 duration-200 ">
+                    Delivered
                   </button>
-                  <button className="px-4 py-1 bg-red-400 text-white">
-                    Cancel Order
+                  <button className="px-4 py-1 border-2 rounded-md bg-red-600 text-white h-fit  hover:bg-white hover:border-2 hover:border-red-600 hover:text-gray-900 duration-200 ">
+                    Cancel
                   </button>
                 </div>
               </div>
@@ -124,7 +149,7 @@ const orders = ({ orders }) => {
   );
 };
 
-export default orders;
+export default Orders;
 
 // backend logic here
 export async function getServerSideProps(context) {

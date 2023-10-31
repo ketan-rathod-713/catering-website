@@ -5,14 +5,19 @@ import NavbarAdmin from "../../../components/NavbarAdmin";
 import PagePadding from "../../../components/PagePadding";
 import PageHeading from "../../../components/PageHeading";
 
-const ProductsList = ({products}) => {
+const ProductsList = ({products, error}) => {
     const [Products, setProducts] = useState(products);
     const [editIndex, setEditIndex] = useState(null);
     
-
     const handleEditClick = (index)=>{
         console.log("edit ", index)
         setEditIndex(index) // let us edit it // go to second page for editi
+    }
+
+    if(error){
+        return <div>
+            {error}
+        </div>
     }
     
   return <div>
@@ -22,7 +27,7 @@ const ProductsList = ({products}) => {
     <PageHeading>Products</PageHeading>
     <div className="space-y-10">
         {
-            Products.map((product, index) => (<div key={index} className="grid grid-cols-9 border-b-2 border-b-gray-400 pb-5">
+            products.map((product, index) => (<div key={index} className="grid grid-cols-9 border-b-2 border-b-gray-400 pb-5">
                 <div className="col-span-9 lg:col-span-1">Id here</div>
                 <div className="col-span-9 lg:col-span-1">{product.title}</div>
                 <div className="col-span-9 lg:col-span-1">{product.price}</div>

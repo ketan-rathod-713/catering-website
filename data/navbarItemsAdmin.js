@@ -5,6 +5,7 @@ const navbarMenuItems = [
     { title: "Home", link: "/admin" },
     { title: "Reviews", link: "/admin/reviews" },
     { title: "Products", link: "/admin/product" },
+    { title: "Create Product", link: "/admin/product/create" },
     { title: "Account", link: "/admin/account" },
     { title: "Orders", link: "/admin/orders" },
     { title: "LOGIN", link: "/auth/login", btn: true },

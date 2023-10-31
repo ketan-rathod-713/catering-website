@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ONGOING } from "../data/orderStatus";
 
 const productOrderSchema = mongoose.Schema({
     product: {
@@ -33,7 +34,7 @@ const orderSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        default: "ongoing",
+        default: ONGOING,
         required: true
     },
     timeWhenOrdered: {
@@ -44,7 +45,15 @@ const orderSchema = mongoose.Schema({
     paymentOption: {
         type: String,
         required: true
-    }
+    },
+    deliveryDate: {
+        type: Date, // first it will be assigned and if delivered late then edit it and place value here.
+        default: null
+    },
+    cancelDate: {
+        type: Date, // to track cancell date
+        default: null
+    },
 })
 
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);

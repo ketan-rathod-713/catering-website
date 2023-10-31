@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema({
+    photoURL: {
+        type: String,
+        default: "https://picsum.photos/200/300"
+    },
     name: {
         type: String,
         required: true
@@ -24,6 +28,16 @@ const userSchema = mongoose.Schema({
     admin: {
         type: Boolean,
         default: false
+    },
+    registrationDate: { // to track no of users added in given time frame
+        type: Date,
+        default: new Date(),
+        required: true
+    },
+    lastTimeWhenVisitedSite: {
+        type: Date,
+        default: new Date(),
+        required: true
     }
 })
 

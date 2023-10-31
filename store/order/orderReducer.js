@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { createNewOrder, fetchAllOrdersAdmin } from "./orderAPI";
+import { createNewOrder, deliverOrder, fetchAllOrdersAdmin } from "./orderAPI";
 import { resetCartProducts } from "../cart/cartReducer";
+import { DELIVERED } from "../../data/orderStatus";
 
 // async actions
-export const fetchAllOrdersAsync = createAsyncThunk("cart/fetchAllOrders", async ()=> {
+export const fetchAllOrdersAsync = createAsyncThunk("order/fetchAllOrders", async ()=> {
   try {
     const data = await fetchAllOrdersAdmin(); // Use the cartAPI to fetch cart data
     return data;
@@ -22,23 +23,29 @@ export const createNewOrderAsync = createAsyncThunk("cart/createNewOrder", async
   }
 })
 
+// async actions
+export const deliverOrderAsync = createAsyncThunk("order/deliverOrder", async ({orderId})=> {
+  try {
+    const data = await deliverOrder({orderId}); // Use the cartAPI to fetch cart data
+    return data;
+  } catch (error) {
+    return {error}
+  }
+})
+
 const orderSlice = createSlice({
     name: 'order',
     initialState: {
         userOrders: [],
         adminOrders: [],
-        currentOrderFullfilled: false,
+        currentOrderFullfilled: false, // given order created or not
         currentOrderDetails: {},
         loading: false,
         error: ""
     },
     reducers: {
-      totalPriceCalculate: (state, action) => {
-        // Redux Toolkit allows us to write "mutating" logic in reducers. It
-        // doesn't actually mutate the state because it uses the Immer library,
-        // which detects changes to a "draft state" and produces a brand new
-        // immutable state based off those changes
-        state.value += 1
+      setAllOrdersFromServerSide: (state, action) => {
+        state.adminOrders = action.payload
       },
       setCurrentOrderFullfilledToFalse: state => {
         state.currentOrderFullfilled = false
@@ -82,13 +89,30 @@ const orderSlice = createSlice({
           state.error = action.error.message;
           state.currentOrderFullfilled = false
         })
+
+        .addCase(deliverOrderAsync.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(deliverOrderAsync.fulfilled, (state, action) => {
+          state.loading = false;
+         // if delivered then change the status of the order from ongoing to delivered on client state
+         const orderId = action.payload;
+         const newState = state.adminOrders.map(order => order._id === orderId ? {...order, status: DELIVERED}: order);
+         state.adminOrders = newState;
+        })
+        .addCase(deliverOrderAsync.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
+          // if rejected show that error
+        })
     }
   })
   
-  export const { totalPriceCalculate, setCartProductsFromServerSideProps, setCurrentOrderFullfilledToFalse} = orderSlice.actions
+  export const { totalPriceCalculate, setCartProductsFromServerSideProps, setCurrentOrderFullfilledToFalse, setAllOrdersFromServerSide} = orderSlice.actions
   
 //   export const selectUserCartProducts = (state) => state.cart.cartProducts;
   export const currentOrderFullfilled = (state) => state.order.currentOrderFullfilled;
+  export const selectAdminOrders = (state) => state.order.adminOrders;
 
   export default orderSlice.reducer;
 
