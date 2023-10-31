@@ -130,7 +130,8 @@ export async function getServerSideProps(context){
     ];
     
     const totalRevenueArray = await Order.aggregate(pipeline);
-    const totalRevenue = totalRevenueArray[0]["totalRevenue"]
+    console.log(totalRevenueArray);
+    const totalRevenue =totalRevenueArray[0] ?  totalRevenueArray[0]["totalRevenue"] : 0;
 
     const dashboardData = {
       total_orders_completed, total_orders_ongoing, totalRevenue, today_orders
