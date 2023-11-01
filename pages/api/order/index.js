@@ -7,6 +7,7 @@ import authoriseAdmin from "../../../utils/authoriseAdmin.js"
 import { sendEmail } from "../../../utils/emailService.js";
 import { CREATE_NEW_ORDER, DELIVER_ORDER, EDIT_ORDER_DETAILS, ASSIGN_DELIVERY_DATE, CANCEL_ORDER_WITH_MESSAGE} from "../../../data/orderPostTypes.js";
 import { DELIVERED, ONGOING } from './../../../data/orderStatus';
+import Razorpay from "razorpay"
 
 export default async function handler(req, res){
     if(req.method === "GET"){ // fetch all orders for admin
@@ -37,8 +38,26 @@ export default async function handler(req, res){
         const decodedToken = await authoriseUser(req); // check if it is correct user or not 
 
         if(decodedToken){
+          // calculate totalPrice 
+          console.log("totalPrie", totalPrice)
+
           const order = new Order({address, products, user: decodedToken["_id"], totalPrice: totalPrice, paymentOption: paymentOption, status: ONGOING})
           await order.save();
+
+          // order is saved hence get the _id of order and do razorpay stuff.
+          const instance = new Razorpay({
+            key_id : "rzp_test_ihCuvpPG2J9MtI",
+            key_secret: "twcCr6gHv67KIjJwBJRXoybz"
+          });
+
+          const options = {
+            receipt: order._id,
+            currency: "INR",
+            amount: totalPrice,
+            payment_capture: 1
+          }
+
+          const razorpayOrder = await instance.orders.create(options)
 
           // order is saved hence send Email to this user.
           const emailIdOfUser = decodedToken["email"];
@@ -46,8 +65,8 @@ export default async function handler(req, res){
           const htmlToWrite = "<h1>Hope You Like the Product</h1>"
           const output = await sendEmail(emailIdOfUser, "Order Placed Successfully",textToWrite, htmlToWrite )
           console.log(output)
-
-          res.status(200).json(order)
+          console.log(razorpayOrder);
+          res.status(200).json(razorpayOrder)
         } else {
           res.status(200).json({message: "Not authenticated"})
         }

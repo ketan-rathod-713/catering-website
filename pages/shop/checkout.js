@@ -11,6 +11,8 @@ import PageHeading from "../../components/PageHeading";
 import { createNewOrder } from "../../store/order/orderAPI";
 import { createNewOrderAsync, currentOrderFullfilled, setCurrentOrderFullfilledToFalse } from "../../store/order/orderReducer";
 import { useRouter } from "next/router";
+import Head from "next/head";
+import Script from "next/script";
 
 const Checkout = () => {
     const userCartProducts = useSelector(selectUserCartProducts);
@@ -45,6 +47,9 @@ const Checkout = () => {
     }
 
   return <div>
+  <Head><meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/></Head>
+    <Script type="application/javascript"></Script>
+
          <Navbar/>
 
 {/* body */}
