@@ -13,6 +13,8 @@ import { createNewOrderAsync, currentOrderFullfilled, setCurrentOrderFullfilledT
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Script from "next/script";
+import { CREATE_NEW_ORDER } from "../../data/orderPostTypes";
+import logo from "../../public/intro.jpg"
 
 const Checkout = () => {
     const userCartProducts = useSelector(selectUserCartProducts);
@@ -23,6 +25,99 @@ const Checkout = () => {
     const currentOrderFullFilledStatus = useSelector(currentOrderFullfilled)
     
     const dispatch = useDispatch();
+
+    const loadScript = (src) =>  {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+            };
+            document.body.appendChild(script);
+        });
+}
+
+const displayRazorpay = async () => {
+    const res = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+    );
+
+    if (!res) {
+        alert("Razorpay SDK failed to load. Are you online?");
+        return;
+    }
+
+    const result = await fetch("/api/order", {
+        method: "POST",
+        body: JSON.stringify({totalPrice: cartTotalPrice, type: CREATE_NEW_ORDER}),
+        headers:  {
+            "Content-Type": "application/json"
+        }
+    })
+
+    const data = await result.json()
+    console.log("data after creating razorpay order ",data);
+    const {amount, id, currency, receipt} = data["razorpayOrder"];
+
+    if (!result) {
+        alert("Server error. Are you online?");
+        return;
+    }
+
+    const options = {
+        key: "rzp_test_ihCuvpPG2J9MtI", // Enter the Key ID generated from the Dashboard
+        amount: amount.toString(),
+        currency: currency,
+        name: "Nakalang Caterers",
+        description: "Pay Order Money",
+        image: {  },
+        order_id: id,
+        handler: async function (response) {
+            console.log("response is",response)
+            console.log("id is",id)
+            const data = {
+                receipt,
+                orderCreationId: id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+                // order related information
+                address: addressInput, paymentOption: paymentOption, products: userCartProducts, totalPrice: cartTotalPrice
+            };
+
+            const result = await fetch("/api/payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            const output = await result.json()
+
+            console.log(output);
+            
+            dispatch(resetCartProductsAsync())
+            router.push("/shop/order") // instead show successfull massage static and give route to view all orders // TODo
+        },
+        prefill: {
+            name: "Soumya Dey",
+            email: "SoumyaDey@example.com",
+            contact: "9999999999",
+        },
+        notes: {
+            address: "Soumya Dey Corporate Office",
+        },
+        theme: {
+            color: "#61dafb",
+        },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+}
 
     const handleOrderNowClick = async ()=>{
         // make order request and route it to my orders or home page
@@ -135,7 +230,7 @@ const Checkout = () => {
                 <div>{cartTotalPrice}</div>
             </div>
             <div className="flex justify-center mt-10">
-                <button className="py-2 px-5 bg-blue-600 rounded-sm text-white" onClick={handleOrderNowClick}>Order Now</button>
+                <button className="py-2 px-5 bg-blue-600 rounded-sm text-white" onClick={displayRazorpay}>Order Now</button>
             </div>
         </div>
     </div>

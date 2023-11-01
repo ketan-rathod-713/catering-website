@@ -75,8 +75,8 @@ const cartSlice = createSlice({
           state.loading = false;
           state.cartProducts = action.payload.products;
 
-          const tp = calculateTotalPric(action.payload.products);
-          state.totalPrice = tp;
+          const totalPrice = calculateTotalPrice(action.payload.products);
+          state.totalPrice = totalPrice;
         })
         .addCase(fetchCartDataAsync.rejected, (state, action) => {
           state.loading = false;

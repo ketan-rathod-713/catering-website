@@ -13,6 +13,25 @@ const productOrderSchema = mongoose.Schema({
     }
 })
 
+const paymentInformationSchema = mongoose.Schema({
+    paymentId: {
+        type: String,
+        required: true
+    },
+    amount: {
+        type: Number,
+        required: true
+    },
+    status: {
+        type: String,
+        required: true
+    },
+    currency: {
+        type: String,
+        required:true
+    } 
+})
+
 const orderSchema = mongoose.Schema({
     products: {
         type: [productOrderSchema],
@@ -54,6 +73,9 @@ const orderSchema = mongoose.Schema({
         type: Date, // to track cancell date
         default: null
     },
+    payment: {
+        type: paymentInformationSchema
+    }
 })
 
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);

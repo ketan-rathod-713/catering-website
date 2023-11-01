@@ -25,44 +25,36 @@ export default async function handler(req, res){
     
     // create order // any user can do it
     else if(req.method === "POST"){
+
       const {type} = req.body;
 
-      if(type === CREATE_NEW_ORDER){
+      if(type === CREATE_NEW_ORDER){ // actually not create new order but intitiate payment process
+        const {totalPrice} = req.body; // in /payment route confirm the totalPrice to be same
         
-      const {address, products, totalPrice, paymentOption} = req.body;
-      console.log(paymentOption)
-      console.log(typeof(paymentOption))
-      // get user from cookies
       try{
         await connectDB();
         const decodedToken = await authoriseUser(req); // check if it is correct user or not 
 
         if(decodedToken){
-          // calculate totalPrice 
-          console.log("totalPrie", totalPrice)
-
-          const order = new Order({address, products, user: decodedToken["_id"], totalPrice: totalPrice, paymentOption: paymentOption, status: ONGOING})
-          await order.save();
-
           // order is saved hence get the _id of order and do razorpay stuff.
           const instance = new Razorpay({
             key_id : "rzp_test_ihCuvpPG2J9MtI",
             key_secret: "twcCr6gHv67KIjJwBJRXoybz"
           });
 
+          const randomNumber = (100000 * Math.random()).toString()
+
           const options = {
-            receipt: order._id,
+            receipt: randomNumber ,
             currency: "INR",
-            amount: totalPrice,
+            amount: totalPrice * 100,
             payment_capture: 1
           }
 
           const razorpayOrder = await instance.orders.create(options)
-
-          // order is saved hence send Email to this user.
+          console.log(razorpayOrder)
           
-          console.log(razorpayOrder);
-          res.status(200).json(razorpayOrder)
+          res.status(200).json({razorpayOrder})
         } else {
           res.status(200).json({message: "Not authenticated"})
         }

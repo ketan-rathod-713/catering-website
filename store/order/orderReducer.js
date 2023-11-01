@@ -79,7 +79,9 @@ const orderSlice = createSlice({
         .addCase(createNewOrderAsync.fulfilled, (state, action) => {
           state.loading = false;
           //   TODO: do something here
-          state.userOrders.push(action.payload);
+          console.log("inside reducer actions ",action.payload)
+          const razorpayOrder = action.payload.razorpayOrder;
+          state.userOrders.push(action.payload.order);
           state.currentOrderFullfilled = true
           
           // now set cart items to null as it is of no need now.
