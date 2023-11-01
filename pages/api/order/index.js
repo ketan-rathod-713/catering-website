@@ -60,11 +60,7 @@ export default async function handler(req, res){
           const razorpayOrder = await instance.orders.create(options)
 
           // order is saved hence send Email to this user.
-          const emailIdOfUser = decodedToken["email"];
-          const textToWrite = "Congratulations Your order with orderId : " + order._id + " is placed successfully. It will be delivered within a week. You can track it by login to your account.";
-          const htmlToWrite = "<h1>Hope You Like the Product</h1>"
-          const output = await sendEmail(emailIdOfUser, "Order Placed Successfully",textToWrite, htmlToWrite )
-          console.log(output)
+          
           console.log(razorpayOrder);
           res.status(200).json(razorpayOrder)
         } else {
