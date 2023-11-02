@@ -8,6 +8,7 @@ import emitToast from './../../utils/emitToast';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Auth from "../../components/Auth";
+import Link from "next/link";
 
 const LoginPage = () => {
     const router = useRouter()
@@ -37,7 +38,7 @@ const LoginPage = () => {
         const token = data["token"];
         if(token){
             Cookies.set("token", token)
-            router.push("/")
+            router.back()
         } else {
             emitToast(toast, data.error)
             const errorMessage = data["message"] || "An error occured"
@@ -64,8 +65,8 @@ const LoginPage = () => {
                         <button onClick={handleSignupClick} className="px-10 text-lg text-white rounded-sm py-3 bg-blue-600">LOGIN</button>
                     </div>
 
-                    <div>
-                        <Auth/>
+                    <div className="text-lg">
+                        If Not Signed In then <Link className="underline" href="/auth/signup">Signup</Link> Instead.
                     </div>
                  </div>
             </div>
