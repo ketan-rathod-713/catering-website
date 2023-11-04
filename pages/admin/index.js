@@ -8,41 +8,7 @@ import PagePadding from './../../components/PagePadding';
 import PageHeading from './../../components/PageHeading';
 import LineChart from "../../components/LineChart";
 import { DELIVERED, ONGOING } from "../../data/orderStatus";
-
-const orders = [
-  ["Date", "Orders"],
-  [1, 89],
-  [2, 13],
-  [3, 52],
-  [4, 68],
-  [5, 41],
-  [6, 27],
-  [7, 91],
-  [8, 7],
-  [9, 35],
-  [10, 70],
-  [11, 96],
-  [12, 86],
-  [13, 63],
-  [14, 24],
-  [15, 18],
-  [16, 81],
-  [17, 12],
-  [18, 43],
-  [19, 48],
-  [20, 58],
-  [21, 6],
-  [22, 79],
-  [23, 10],
-  [24, 74],
-  [25, 23],
-  [26, 17],
-  [27, 3],
-  [28, 51],
-  [29, 16],
-  [30, 37]
-];
-
+import BarChart from "../../components/BarChart";
 
 const AdminPanel = ({error, dashboardData}) => {
 
@@ -51,6 +17,11 @@ const AdminPanel = ({error, dashboardData}) => {
         <NotAuthorised message={error}/>
     </div>
 }
+
+const ordersForLineChart = dashboardData.totalOrdersInMonth.map(item => [item._id, item.totalOrders]);
+const ordersDeliveredForLineChart = dashboardData.totalDeliveredOrdersInMonth.map(item => [item._id, item.totalOrders]);
+const pendingOrdersDateWise = dashboardData.pendingOrdersDateWise.map(item => [item._id, item.ordersPending]);
+console.log(pendingOrdersDateWise);
 
   return <div className="">
     <NavbarAdmin/>
@@ -81,14 +52,42 @@ const AdminPanel = ({error, dashboardData}) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-10 mt-10">
-        <div>
-          <h1 className="text-xl font-bold text-center">No Of Orders This Month</h1>
-          <LineChart orders={orders}/>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-20">
+        <div className="space-y-10">
+          <h1 className="text-2xl font-bold text-center">Orders</h1>
+          <BarChart data={[["Date", "Orders"] ,...ordersForLineChart]} />
         </div>
 
+        <div className="space-y-10">
+        <h1 className="text-2xl font-bold text-center">Delivered Orders</h1>
+        <BarChart data={[["Date", "Orders"] ,...ordersDeliveredForLineChart]} />
+        </div>
+      </div>
+
+      {/* show product wise orders .products to fulfilled */}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 mt-20 gap-10">
+        <div className="border-gray-200 border-2 p-5 rounded-md shadow-md">
+        <h1 className="text-2xl font-bold text-center my-5">Product Orders To FullFill</h1>
+        <div className="flex-col space-y-10">
+        {
+          dashboardData.productWiseOrdersToFullFill.map((product, index)=>(
+            <div key={index} className="grid grid-cols-2 text-xl py-2 px-3">
+              <div className=" flex flex-col">
+                <div className="font-bold">{product.product.title}</div>
+                <div className="text-sm">Product Id : {product._id}</div>
+              </div>
+              <div className="flex justify-end font-bold">{product.totalOrdersToFulFill}</div>
+            </div>
+          ))
+        }
+      </div>
+        </div>
+        <div className="border-gray-200 border-2 p-5 rounded-md shadow-md">
+        <h1 className="text-2xl font-bold text-center my-5">Pending Orders Date Wise</h1>
         <div>
-        <h1 className="text-xl font-bold">All Notifications</h1>
+          <BarChart data={[["Date", "Orders"],...pendingOrdersDateWise]}/>
+        </div>
         </div>
       </div>
     </PagePadding>
@@ -96,6 +95,10 @@ const AdminPanel = ({error, dashboardData}) => {
 };
 
 export default AdminPanel;
+
+
+
+// SERVER SIDE CODE
 
 export async function getServerSideProps(context){
   const {req} = context;
@@ -133,8 +136,23 @@ export async function getServerSideProps(context){
     console.log(totalRevenueArray);
     const totalRevenue =totalRevenueArray[0] ?  totalRevenueArray[0]["totalRevenue"] : 0;
 
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const totalOrdersInMonth = await findOrdersPerDayInMonth(currentMonth, currentYear)
+    console.log(totalOrdersInMonth);
+
+    const totalDeliveredOrdersInMonth = await findDeliveredOrdersPerDayInMonth(currentMonth, currentYear)
+    console.log(totalDeliveredOrdersInMonth);
+
+    const productWiseOrdersToFullFill = await findProductWiseOrdersToFullFill()
+    console.log(productWiseOrdersToFullFill);
+
+    const pendingOrdersDateWise = await findPendingOrdersPerDayInMonth()
+    console.log(productWiseOrdersToFullFill);
+
     const dashboardData = {
-      total_orders_completed, total_orders_ongoing, totalRevenue, today_orders
+      total_orders_completed, total_orders_ongoing, totalRevenue, today_orders, totalOrdersInMonth, totalDeliveredOrdersInMonth,productWiseOrdersToFullFill, pendingOrdersDateWise
     }
 
     return {
@@ -152,4 +170,207 @@ export async function getServerSideProps(context){
 
   
   
+}
+
+// write function to get month wise data
+
+async function findProductWiseOrdersToFullFill() {
+  try {
+    const ordersDateWise =await Order.aggregate([
+      {
+          '$match': {
+              'status': 'ONGOING'
+          }
+      }, {
+          '$unwind': {
+              'path': '$products', 
+              'preserveNullAndEmptyArrays': false
+          }
+      }, {
+          '$group': {
+              '_id': '$products.product._id', 
+              'totalOrdersToFulFill': {
+                  '$sum': '$products.quantity'
+              }
+          }
+      }, {
+          '$lookup': {
+              'from': 'products', 
+              'let': {
+                  'localId': {
+                      '$toObjectId': '$_id'
+                  }
+              }, 
+              'pipeline': [
+                  {
+                      '$match': {
+                          '$expr': {
+                              '$eq': [
+                                  '$$localId', '$_id'
+                              ]
+                          }
+                      }
+                  }
+              ], 
+              'as': 'product'
+          }
+      }, {
+          '$addFields': {
+              'product': {
+                  '$arrayElemAt': [
+                      '$product', 0
+                  ]
+              }
+          }
+      }, {
+          '$project': {
+              'totalOrdersToFulFill': 1, 
+              'product': {
+                  'title': '$product.title', 
+                  'category': '$product.category'
+              }
+          }
+      }
+  ])
+console.log("orders product wise wise",ordersDateWise);
+return ordersDateWise;
+
+  } catch (error) {
+    console.error("Error while finding orders per day:", error);
+    return []; // Return an empty array in case of an error
+  }
+}
+
+async function findPendingOrdersPerDayInMonth() {
+  try {
+    const ordersDateWise =await Order.aggregate([
+      {
+        '$match': {
+          'status': 'ONGOING'
+        }
+      }, {
+        '$addFields': {
+          'day': {
+            '$dateToString': {
+              'format': '%Y-%m-%d', 
+              'date': '$timeWhenOrdered'
+            }
+          }
+        }
+      }, {
+        '$group': {
+          '_id': '$day', 
+          'ordersPending': {
+            '$sum': 1
+          }
+        }
+      }
+    ])
+console.log("orders product wise wise",ordersDateWise);
+return ordersDateWise;
+
+  } catch (error) {
+    console.error("Error while finding orders per day:", error);
+    return []; // Return an empty array in case of an error
+  }
+}
+
+async function findOrdersPerDayInMonth(month, year) {
+  console.log(month, year);
+  try {
+    const ordersDateWise =await Order.aggregate([
+      {
+        '$addFields': {
+          'day': {
+            '$dateToString': {
+              'format': '%Y-%m-%d', 
+              'date': '$timeWhenOrdered'
+            }
+          }, 
+          'year': {
+            '$dateToString': {
+              'format': '%Y', 
+              'date': '$timeWhenOrdered'
+            }
+          }, 
+          'month': {
+            '$dateToString': {
+              'format': '%m', 
+              'date': '$timeWhenOrdered'
+            }
+          }
+        }
+      }, {
+        '$match': {
+          'month': '11', 
+          'year': '2023'
+        }
+      }, {
+        '$group': {
+          '_id': '$day', 
+          'totalOrders': {
+            '$sum': 1
+          }
+        }
+      }
+    ])
+console.log("orders date wise",ordersDateWise);
+return ordersDateWise;
+
+  } catch (error) {
+    console.error("Error while finding orders per day:", error);
+    return []; // Return an empty array in case of an error
+  }
+}
+
+async function findDeliveredOrdersPerDayInMonth(month, year) {
+  console.log(month, year);
+  try {
+    const ordersDateWise =await Order.aggregate([
+      {
+        '$match': {
+          'status': 'DELIVERED'
+        }
+      }, {
+        '$addFields': {
+          'day': {
+            '$dateToString': {
+              'format': '%Y-%m-%d', 
+              'date': '$deliveryDate'
+            }
+          }, 
+          'year': {
+            '$dateToString': {
+              'format': '%Y', 
+              'date': '$deliveryDate'
+            }
+          }, 
+          'month': {
+            '$dateToString': {
+              'format': '%m', 
+              'date': '$deliveryDate'
+            }
+          }
+        }
+      }, {
+        '$match': {
+          'month': `${month}`, 
+          'year': `${year}`
+        }
+      }, {
+        '$group': {
+          '_id': '$day', 
+          'totalOrders': {
+            '$sum': 1
+          }
+        }
+      }
+    ])
+console.log("orders date wise",ordersDateWise);
+return ordersDateWise;
+
+  } catch (error) {
+    console.error("Error while finding orders per day:", error);
+    return []; // Return an empty array in case of an error
+  }
 }

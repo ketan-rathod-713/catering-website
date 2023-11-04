@@ -28,16 +28,10 @@ const ProductsList = ({products, error}) => {
     <div className="space-y-10">
         {
             products.map((product, index) => (<div key={index} className="grid grid-cols-9 border-b-2 border-b-gray-400 pb-5">
-                <div className="col-span-9 lg:col-span-1">Id here</div>
+                <div className="col-span-9 lg:col-span-2">{product._id}</div>
                 <div className="col-span-9 lg:col-span-1">{product.title}</div>
                 <div className="col-span-9 lg:col-span-1">{product.price}</div>
                 <div className="col-span-9 lg:col-span-1">{product.category}</div>
-                <div className="col-span-9 lg:col-span-2">{product.description}</div>
-                <div className="col-span-9 lg:col-span-2">{
-                    product.keyPoints.map((keyPoint, index) => <div key={index}>
-                        {keyPoint}
-                    </div>)
-                }</div>
                 <div className="col-span-9 lg:col-span-1 flex space-x-2 justify-end items-start">
                     <button className="px-2 py-1 bg-red-500 rounded-sm text-white">DELETE</button>
                     <button className="px-2 py-1 bg-green-500 rounded-sm text-white">EDIT</button>

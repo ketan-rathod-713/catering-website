@@ -13,24 +13,6 @@ const productOrderSchema = mongoose.Schema({
     }
 })
 
-const paymentInformationSchema = mongoose.Schema({
-    paymentId: {
-        type: String,
-        required: true
-    },
-    amount: {
-        type: Number,
-        required: true
-    },
-    status: {
-        type: String,
-        required: true
-    },
-    currency: {
-        type: String,
-        required:true
-    } 
-})
 
 const orderSchema = mongoose.Schema({
     products: {
@@ -74,7 +56,9 @@ const orderSchema = mongoose.Schema({
         default: null
     },
     payment: {
-        type: paymentInformationSchema
+        type: mongoose.Types.ObjectId ,
+        ref: "Payment",
+        required: true
     }
 })
 

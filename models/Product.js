@@ -30,6 +30,21 @@ const productSchema = mongoose.Schema({
         type: Number,
         default: 5,
         required: true
+    },
+    discount: {
+        type: Number,
+        default: 0,
+        required: true
+    },
+    cost: { // cost of making this product, to calculate the total profit for only admin access field
+        type: Number,
+        default: 0,
+        required: true
+    },
+    stock: { // only admin access
+        type: Number,
+        default: 0, // show out of stock at the frontend <10 if it is else don't send data
+        required: true
     }
 })
 

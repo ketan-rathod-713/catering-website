@@ -15,6 +15,7 @@ import Head from "next/head";
 import Script from "next/script";
 import { CREATE_NEW_ORDER } from "../../data/orderPostTypes";
 import logo from "../../public/intro.jpg"
+import { CASH_ON_DELIVERY, ONLINE } from './../../data/paymentOptions';
 
 const Checkout = () => {
     const userCartProducts = useSelector(selectUserCartProducts);
@@ -100,7 +101,7 @@ const displayRazorpay = async () => {
             console.log(output);
             
             dispatch(resetCartProductsAsync())
-            router.push("/shop/order") // instead show successfull massage static and give route to view all orders // TODo
+            router.push("/shop/order-success") // instead show successfull massage static and give route to view all orders // TODo
         },
         prefill: {
             name: "Soumya Dey",
@@ -165,11 +166,11 @@ const displayRazorpay = async () => {
         <h1 className="text-xl font-bold">Payment Options</h1>
         <div className="flex flex-col space-y-5 mt-5">
             <div className="flex items-center space-x-5">
-                <input type="radio" name="paymentOption" value="cash" onClick={(e)=>setPaymentOption(e.target.value)} className="h-5 w-5"/>
+                <input type="radio" disabled name="paymentOption" value={CASH_ON_DELIVERY} onClick={(e)=>setPaymentOption(e.target.value)} className="h-5 w-5"/>
                 <span>Cash On Delivery</span>
             </div>
             <div className="flex items-center space-x-5">
-                <input type="radio" name="paymentOption" value="online" onClick={(e)=>setPaymentOption(e.target.value)} className="h-5 w-5"/>
+                <input type="radio" name="paymentOption" value={ONLINE} onClick={(e)=>setPaymentOption(e.target.value)} className="h-5 w-5"/>
                 <span>Online</span>
             </div>
         </div>
