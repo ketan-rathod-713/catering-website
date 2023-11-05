@@ -9,15 +9,15 @@ export const data = [
   ["2017", 1030, 540, 350],
 ];
 
-// export const options = {
-//   chart: {
-//     title: "Order Sales of October",
-//     subtitle: "Sales, Expenses & Profits",
-//   },
-//   hAxis: {
-//     format: "d", // Display only the day in the X-axis labels
-//   },
-// };
+export const options = {
+  chart: {
+    title: "Bar Chart",
+    subtitle: "Orders",
+  },
+  hAxis: {
+    format: "d", // Display only the day in the X-axis labels
+  },
+};
 
 export default function BarChart({data}) {
   return (
@@ -26,7 +26,7 @@ export default function BarChart({data}) {
       width="100%"
       height="400px"
       data={data}
-      // options={options}
+      options={options}
     />
   );
 }

@@ -3,7 +3,7 @@ import SECREAT_KEY from "../data/secreateKey";
 import Cookies from "cookies";
 import User from './../models/User';
 
-export default async function handler(req){
+export default async function authoriseAdmin(req){
     try {
 
         const cookie = new Cookies(req);

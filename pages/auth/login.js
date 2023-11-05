@@ -37,7 +37,7 @@ const LoginPage = () => {
         console.log(data);
         const token = data["token"];
         if(token){
-            Cookies.set("token", token)
+            Cookies.set("token", token, { expires: 30 }); // Expires in 30 days
             router.back()
         } else {
             emitToast(toast, data.error)

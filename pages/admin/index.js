@@ -11,17 +11,17 @@ import { DELIVERED, ONGOING } from "../../data/orderStatus";
 import BarChart from "../../components/BarChart";
 
 const AdminPanel = ({error, dashboardData}) => {
-
   if(error){
     return <div>
         <NotAuthorised message={error}/>
     </div>
 }
 
+console.log(dashboardData);
+
 const ordersForLineChart = dashboardData.totalOrdersInMonth.map(item => [item._id, item.totalOrders]);
 const ordersDeliveredForLineChart = dashboardData.totalDeliveredOrdersInMonth.map(item => [item._id, item.totalOrders]);
 const pendingOrdersDateWise = dashboardData.pendingOrdersDateWise.map(item => [item._id, item.ordersPending]);
-console.log(pendingOrdersDateWise);
 
   return <div className="">
     <NavbarAdmin/>
@@ -114,10 +114,6 @@ export async function getServerSideProps(context){
     const total_orders_ongoing = await Order.countDocuments({status: ONGOING});
     const total_orders_completed = await Order.countDocuments({status: DELIVERED});
 
-    console.log(today_orders)
-    console.log(total_orders_ongoing);
-
-    // total revenue // add all orders prices // completed orders
     const pipeline = [
       {
         $match: {
@@ -133,23 +129,15 @@ export async function getServerSideProps(context){
     ];
     
     const totalRevenueArray = await Order.aggregate(pipeline);
-    console.log(totalRevenueArray);
     const totalRevenue =totalRevenueArray[0] ?  totalRevenueArray[0]["totalRevenue"] : 0;
 
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
 
     const totalOrdersInMonth = await findOrdersPerDayInMonth(currentMonth, currentYear)
-    console.log(totalOrdersInMonth);
-
     const totalDeliveredOrdersInMonth = await findDeliveredOrdersPerDayInMonth(currentMonth, currentYear)
-    console.log(totalDeliveredOrdersInMonth);
-
     const productWiseOrdersToFullFill = await findProductWiseOrdersToFullFill()
-    console.log(productWiseOrdersToFullFill);
-
     const pendingOrdersDateWise = await findPendingOrdersPerDayInMonth()
-    console.log(productWiseOrdersToFullFill);
 
     const dashboardData = {
       total_orders_completed, total_orders_ongoing, totalRevenue, today_orders, totalOrdersInMonth, totalDeliveredOrdersInMonth,productWiseOrdersToFullFill, pendingOrdersDateWise
@@ -232,7 +220,7 @@ async function findProductWiseOrdersToFullFill() {
           }
       }
   ])
-console.log("orders product wise wise",ordersDateWise);
+// console.log("orders product wise wise",ordersDateWise);
 return ordersDateWise;
 
   } catch (error) {
@@ -266,7 +254,7 @@ async function findPendingOrdersPerDayInMonth() {
         }
       }
     ])
-console.log("orders product wise wise",ordersDateWise);
+// console.log("orders product wise wise",ordersDateWise);
 return ordersDateWise;
 
   } catch (error) {
@@ -276,7 +264,7 @@ return ordersDateWise;
 }
 
 async function findOrdersPerDayInMonth(month, year) {
-  console.log(month, year);
+  // console.log(month, year);
   try {
     const ordersDateWise =await Order.aggregate([
       {
@@ -314,7 +302,7 @@ async function findOrdersPerDayInMonth(month, year) {
         }
       }
     ])
-console.log("orders date wise",ordersDateWise);
+// console.log("orders date wise",ordersDateWise);
 return ordersDateWise;
 
   } catch (error) {
@@ -324,7 +312,7 @@ return ordersDateWise;
 }
 
 async function findDeliveredOrdersPerDayInMonth(month, year) {
-  console.log(month, year);
+  // console.log(month, year);
   try {
     const ordersDateWise =await Order.aggregate([
       {
@@ -366,7 +354,7 @@ async function findDeliveredOrdersPerDayInMonth(month, year) {
         }
       }
     ])
-console.log("orders date wise",ordersDateWise);
+// console.log("orders date wise",ordersDateWise);
 return ordersDateWise;
 
   } catch (error) {

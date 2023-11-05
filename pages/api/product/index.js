@@ -5,8 +5,12 @@ import {createRouter} from 'next-connect';
 import mongoose from "mongoose";
 import Image from "../../../models/Image.js";
 import { TIME_NEWEST_FIRST, TIME_OLDEST_FIRST, RATING_HIGH_FIRST, RATING_LOW_FIRST, PRICE_HIGH_FIRST, PRICE_LOW_FIRST} from './../../../data/sortProductTypes';
-
+import multer from "multer";
 const handler = createRouter()
+
+const storage = multer.memoryStorage(); // store image in memory as buffer
+
+const upload = multer({storage})
 
 handler.get(async (req, res)=>{
   const {page, limit, sort} = req.query;
@@ -38,32 +42,26 @@ handler.get(async (req, res)=>{
   }
 })
 
-
+// CREATE PRODUCT
 handler.post(async (req, res)=>{
-      const {title, description, price, category, image, keyPoints} = req.body;
-      console.log(title);
-      try{
-        await connectDB();
+  try{
+    upload(req, res, async function (err) {
+        if (err) {
+          return res.status(500).json({ error: "Image upload failed" });
+        }
 
-        // const bufferData = Buffer.from(image, "base64");
+        
+      });
 
-        // const imageModel = new Image({
-        //   name: new Date(),
-        //   data: bufferData,
-        //   contentType: "image"
-        // })
-        // await imageModel.save()
+    // await connectDB();
+    // const product = new Product({title, description, price, category, image: image, keyPoints})
+        // await product.save();
 
-        // const imageId = imageModel._id;
-        // const imageUrl = "/api/uploads/"+imageId;
-        const product = new Product({title, description, price, category, image: image, keyPoints})
-        await product.save();
-
-        res.status(200).json(product)
-      } catch(err){
+        // res.status(200).json(product)
+    } catch(err){
         console.log(err);
         res.status(500).json({error: "Server error"})
-      }
+    }
 })
 
 export default handler.handler({
@@ -72,3 +70,10 @@ export default handler.handler({
     res.status(err.statusCode || 500).end(err.message);
   },
 });
+
+export const config = {
+  api: {
+      bodyParser: false,
+      externalResolver: true,
+  },
+};

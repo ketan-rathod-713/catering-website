@@ -45,6 +45,21 @@ const productSchema = mongoose.Schema({
         type: Number,
         default: 0, // show out of stock at the frontend <10 if it is else don't send data
         required: true
+    },
+    quantityType: {
+        type: String,
+        default: "PIECE",
+        required: true
+    },
+    quantity: {
+        type: Number,
+        default: 1, // kg or piece
+        required: true
+    },
+    status: {
+        type: String,
+        default: "PUBLISH",
+        required: true
     }
 })
 

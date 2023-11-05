@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const imageSchema = mongoose.Schema({
-    name: {
-        type: "String",
-        required: true
-    },
     data: {
         type: Buffer,
         required: true
