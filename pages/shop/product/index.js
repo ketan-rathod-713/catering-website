@@ -376,7 +376,8 @@ const ProductList = ({products, limit, totalDocs}) => {
 export default ProductList;
 
 export async function getServerSideProps() {
-    
+
+
     // here define page and limit
     const page = 1;
     const limit = 5;
